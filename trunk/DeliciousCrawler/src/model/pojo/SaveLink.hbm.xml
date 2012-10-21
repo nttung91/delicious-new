@@ -8,10 +8,10 @@
             <column name="save_link_id" />
             <generator class="assigned" />
         </id>
-        <many-to-one name="author" class="model.pojo.Author" fetch="select">
+        <many-to-one name="author" class="model.pojo.Author" fetch="select" cascade="save-update">
             <column name="author_id" />
         </many-to-one>
-        <many-to-one name="link" class="model.pojo.Link" fetch="select">
+        <many-to-one name="link" class="model.pojo.Link" fetch="select" cascade="save-update">
             <column name="link_id" />
         </many-to-one>
         <property name="dateSave" type="timestamp">

@@ -55,7 +55,7 @@ public class LinkByTag extends Thread {
                 if (list.get(j).contains(" ")) continue;
             //    Thread.currentThread().sleep(500);
                 l = DeliciousHepler.getPopularListBookmarkByTag(list.get(j), 1000);
-                System.out.println("after"+l.size());
+                
                 if (l != null && l.size() > 0) {
                     int count =0;
                     for (int i = 0; i < l.size(); i++) {
@@ -86,29 +86,13 @@ public class LinkByTag extends Thread {
         }
         System.out.println(threadname+" -------------------------------Thread end-------------------------");
     }
-    public void getRecentTag() throws InterruptedException{
-         int i = 10;
-        int delaytime = 50;
-        while (true){
-            try {
-                delaytime +=DeliciousHepler.getRecentTag();
-                
-               System.out.println("Pause "+delaytime+" sec.........................");
-               Thread.sleep(delaytime*1000);
-            } catch (MalformedURLException ex) {
-                Logger.getLogger(LinkByTag.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (IOException ex) {
-                Logger.getLogger(LinkByTag.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-    }
     public void getLinkHistory(){
         System.out.println("Reading......link............");
         
         LinkDAO dao = new LinkDAO();
-        List<Link> list =dao.getList1();
+        List<Link> list =dao.getListOrdered();
         System.out.println("Lay xong ds Link!");
-        for (int i=3143;i<list.size();i++){
+        for (int i=0;i<list.size();i++){
             try {
                 DeliciousHepler.getAndSaveBookmarkHistoryByLink(list.get(i));
             } catch (ParseException ex) {
@@ -119,6 +103,24 @@ public class LinkByTag extends Thread {
                 Logger.getLogger(LinkByTag.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+    }
+    public void getLinkInfo(){
+         System.out.println("Reading......link............");
+         LinkDAO dao = new LinkDAO();
+         int start =0;
+         List<Link> list =dao.getListUrl(start);
+         for (int i=0;i<list.size();i++){
+            try {
+                DeliciousHepler.getAndSaveBookmarkInfo(list.get(i).getUrl());
+                logger.info("Get info for link have id =#"+list.get(i).getLinkId());
+            } catch (ParseException ex) {
+                Logger.getLogger(LinkByTag.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (MalformedURLException ex) {
+                Logger.getLogger(LinkByTag.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (IOException ex) {
+                Logger.getLogger(LinkByTag.class.getName()).log(Level.SEVERE, null, ex);
+            }
+         }
     }
     public static void main(String[] args) throws InterruptedException {
         

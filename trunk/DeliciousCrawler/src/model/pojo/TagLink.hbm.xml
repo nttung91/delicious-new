@@ -12,10 +12,10 @@
                 <column name="tag_id" />
             </key-property>
         </composite-id>
-        <many-to-one name="tag" class="model.pojo.Tag" update="false" insert="false" fetch="select">
+        <many-to-one name="tag" class="model.pojo.Tag" update="false" insert="false" fetch="select" cascade="save-update">
             <column name="tag_id" not-null="true" />
         </many-to-one>
-        <many-to-one name="saveLink" class="model.pojo.SaveLink" update="false" insert="false" fetch="select">
+        <many-to-one name="saveLink" class="model.pojo.SaveLink" update="false" insert="false" fetch="select" cascade="save-update">
             <column name="save_link_id" not-null="true" />
         </many-to-one>
         <property name="info" type="string">

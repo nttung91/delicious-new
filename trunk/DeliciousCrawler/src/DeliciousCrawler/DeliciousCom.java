@@ -40,8 +40,8 @@ public class DeliciousCom extends Thread {
     @Override
     public void run() {
 
-       getRecentBookmarkByTag(list,name);
-       //getLinkHistory();
+      // getRecentBookmarkByTag(list,name);
+       getLinkHistory();
     }
 
     public void getRecentBookmarkByTag(List<String> list,String threadname) {
@@ -97,22 +97,25 @@ public class DeliciousCom extends Thread {
         }
     }
     public void getLinkHistory(){
-        System.out.println("Reading......document............");
+        System.out.println("Reading......links............");
         
         LinkDAO dao = new LinkDAO();
-        List<Link> list =dao.getList1();
-        System.out.println("Lay xong ds document!");
-        for (int i=3143;i<list.size();i++){
+        List<Link> list =dao.getListOrdered();
+        System.out.println("Lay xong ds link!");
+        for (int i=0;i<list.size();i++){
             try {
                 try {
                     DeliciousHepler.getAndSaveBookmarkHistoryByLink(list.get(i));
                 } catch (MalformedURLException ex) {
                     Logger.getLogger(DeliciousCom.class.getName()).log(Level.SEVERE, null, ex);
+                    ex.printStackTrace();
                 } catch (IOException ex) {
                     Logger.getLogger(DeliciousCom.class.getName()).log(Level.SEVERE, null, ex);
+                    ex.printStackTrace();
                 }
             } catch (ParseException ex) {
                 Logger.getLogger(DeliciousCom.class.getName()).log(Level.SEVERE, null, ex);
+                ex.printStackTrace();
             }
         }
     }
@@ -126,7 +129,7 @@ public class DeliciousCom extends Thread {
             rootGroup = parentGroup;
         }
          
-         DeliciousCom[] threads = new DeliciousCom[2];
+         DeliciousCom[] threads = new DeliciousCom[1];
           for (int i = 0;i<threads.length;i++){
                     if (threads[i]==null) {
                         threads[i] = new DeliciousCom("Thread #"+(i+1),0, rootGroup);
@@ -144,7 +147,7 @@ public class DeliciousCom extends Thread {
                         return;
                     }
                     if (!threads[i].isAlive()) {
-                        Thread.sleep(450000);
+                        Thread.sleep(0);
                         threads[i] = new DeliciousCom("Thread #"+(i+1),0, rootGroup);
                         System.out.println("#"+threads[i].getName()+"Start again");
                         restartCount[i]++;
