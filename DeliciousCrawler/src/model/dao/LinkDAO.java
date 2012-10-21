@@ -54,17 +54,26 @@ public class LinkDAO extends ObjectDAO<Link, Integer> {
          }
          
      }
-       public List<Link> getList1() throws HibernateException{
+      
+      public List<Link> getListOrdered() throws HibernateException{
         Session session = HibernateUtil.getSessionFactory().openSession();
         List<Link> list= null;
         String hql = String.format("select obj from Link obj order by obj.linkId");
         Query query = session.createQuery(hql);
-      
         list = query.list();
         session.close();
         return list;
     }
-
+      public List<Link> getListUrl(int start) throws HibernateException{
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        List<Link> list= null;
+        String hql = String.format("select obj from Link obj where obj.linkId > :val order by obj.linkId");
+        Query query = session.createQuery(hql);
+        query.setParameter("val", start);
+        list = query.list();
+        session.close();
+        return list;
+    }
     @Override
     protected Class getPOJOClass() {
         return Link.class;
