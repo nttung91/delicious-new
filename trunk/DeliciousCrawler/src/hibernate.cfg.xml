@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC "-//Hibernate/Hibernate Configuration DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+  <session-factory>
+    <property name="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</property>
+    <property name="hibernate.connection.driver_class">org.postgresql.Driver</property>
+    <property name="hibernate.connection.url">jdbc:postgresql://localhost:5432/Delicious</property>
+    <property name="hibernate.connection.username">postgres</property>
+    <property name="hibernate.connection.password">thanhtung</property>
+    <mapping resource="model/pojo/TagLink.hbm.xml"/>
+    <mapping resource="model/pojo/Author.hbm.xml"/>
+    <mapping resource="model/pojo/Tag.hbm.xml"/>
+    <mapping resource="model/pojo/TagCollect.hbm.xml"/>
+    <mapping resource="model/pojo/SaveLink.hbm.xml"/>
+    <mapping resource="model/pojo/Link.hbm.xml"/>
+    <mapping resource="model/pojo/Following.hbm.xml"/>
+  </session-factory>
+</hibernate-configuration>
