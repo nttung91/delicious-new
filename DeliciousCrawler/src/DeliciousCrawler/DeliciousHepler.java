@@ -472,4 +472,55 @@ public class DeliciousHepler {
 
 
     }
+    public static void getFollower(Author a) throws MalformedURLException, IOException{
+         JSONParser jsonParser = new JSONParser();
+
+        
+        String jsonDataString = getResponeData(String.format("http://feeds.delicious.com/v2/json/networkmembers/%s?count=1000",a.getAuthorName()));
+        if (jsonDataString != null) {
+             try {
+                JSONArray jsonArray = (JSONArray) jsonParser.parse(jsonDataString);
+                int count = 0;
+                logger.info(String.format("So follower lay dc:" + jsonArray.size()));
+                System.out.println("So follower lay dc:" + jsonArray.size());
+                for (int i = 0; i < jsonArray.size(); i++) {
+
+                    JSONObject obj = (JSONObject) jsonArray.get(i);
+                    Timestamp ts = null;
+                    if (obj.get("dt") != null) {
+                        String date = obj.get("dt").toString();
+                        date = date.replace("T", " ").replace("Z", "");
+                        // System.out.println(date);
+                        ts = Timestamp.valueOf(date);
+                    }
+                    if (obj.get("user") != null) {
+                        AuthorDAO daoA = new AuthorDAO();
+                        FollowingDAO daoF = new FollowingDAO();
+                        Following fo = new Following();
+                        Author f = daoA.getObjectByName(obj.get("user").toString().trim());
+                         fo.setAuthorByFollowee(a);
+                         fo.setDateFollow(ts);
+                        if (f!=null) {
+                               FollowingId id = new FollowingId(f.getAuthorId(), a.getAuthorId());
+                              
+                               fo.setAuthorByFollower(f);
+                               daoF.saveOrUpdateObject(fo);
+                        }
+                        else {
+                            f = new Author(AuthorDAO.nextIndex());
+                            f.setAuthorName(obj.get("a").toString().trim());
+                            FollowingId id = new FollowingId(f.getAuthorId(), a.getAuthorId());
+                            fo.setAuthorByFollower(f);
+                        }
+                        
+                     
+                    }
+                }
+                
+            } catch (ParseException | NumberFormatException | HibernateException ex) {
+                System.out.println("--------------------Error ---------------");
+            }
+        
+        }
+    }
 }
