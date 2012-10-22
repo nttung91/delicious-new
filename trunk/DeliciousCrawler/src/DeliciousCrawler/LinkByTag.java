@@ -7,8 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import model.dao.LinkDAO;
-import model.pojo.Link;
+import model.dao.*;
+import model.pojo.*;
 import org.json.simple.parser.ParseException;
 
 
@@ -30,9 +30,18 @@ public class LinkByTag extends Thread {
         this.name = name;
         
         
-         list = DatabaseHelper.getMostPopularTag();
+         list = DatabaseHelper.getMostPopularTag(1000);
          this.peroid = list.size()/numberOfThread+1;
          this.start = thread * this.peroid+currentPosition;
+         logger.info(String.format("%s started.\n", name));
+        System.out.printf("%s started.\n", name);
+        start();
+    }
+     public LinkByTag(String name,int count) {
+        super(name);
+       
+        this.name = name;
+         list = DatabaseHelper.getMostPopularTag(count);
          logger.info(String.format("%s started.\n", name));
         System.out.printf("%s started.\n", name);
         start();
@@ -40,7 +49,7 @@ public class LinkByTag extends Thread {
     @Override
     public void run() {
 
-       getRecentBookmarkByTag(list,name,start,start+peroid);
+       //getRecentBookmarkByTag(list,name,start,start+peroid);
        //getLinkHistory();
     }
 
@@ -84,7 +93,7 @@ public class LinkByTag extends Thread {
             ex.printStackTrace();
             Logger.getLogger(DeliciousCom.class.getName()).log(Level.SEVERE, null, ex);
         }
-        System.out.println(threadname+" -------------------------------Thread end-------------------------");
+        System.out.println(threadname+" -------------------------------Thread end no error-------------------------");
     }
     public void getLinkHistory(){
         System.out.println("Reading......link............");
@@ -122,17 +131,36 @@ public class LinkByTag extends Thread {
             }
          }
     }
+    public void getAndSaveFollowerInfo(){
+        AuthorDAO dao = new AuthorDAO();
+        
+        List<Author> list = dao.getList();
+        for (int i=0;i<list.size();i++){
+            try {
+                DeliciousHepler.getFollower(list.get(i));
+                logger.info(String.format("Save follower of #%d:%s",list.get(i).getAuthorId(),list.get(i).getAuthorName()));
+            } catch (MalformedURLException ex) {
+                Logger.getLogger(LinkByTag.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (IOException ex) {
+                Logger.getLogger(LinkByTag.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
     public static void main(String[] args) throws InterruptedException {
         
          // getLinkHistory();
-//        
+        //run only one thread
+        List<String> list = DatabaseHelper.getMostPopularTag(1000);
+        LinkByTag lbt = new LinkByTag("Main",1000);
+        lbt.getRecentBookmarkByTag(list,"main",1,100);
+        /*
         ThreadGroup rootGroup = Thread.currentThread().getThreadGroup();
         ThreadGroup parentGroup;
         while ((parentGroup = rootGroup.getParent()) != null) {
             rootGroup = parentGroup;
         }
         
-         LinkByTag[] threads = new LinkByTag[3];
+         LinkByTag[] threads = new LinkByTag[1];
           for (int i = 0;i<threads.length;i++){
                     if (threads[i]==null) {
                         threads[i] = new LinkByTag("Thread #"+(i+1),i,0,threads.length, rootGroup);
@@ -161,6 +189,6 @@ public class LinkByTag extends Thread {
                     }
                 }
                 
-        }
+        }*/
     }
 }

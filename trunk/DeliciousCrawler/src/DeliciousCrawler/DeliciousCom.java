@@ -31,7 +31,7 @@ public class DeliciousCom extends Thread {
         super(tg,name);
         this.delay = delay;
         this.name = name;
-         list = DatabaseHelper.getMostPopularTag();
+         list = DatabaseHelper.getMostPopularTag(100000);
          logger.info(String.format("%s started.\n", name));
         System.out.printf("%s started.\n", name);
         start();
