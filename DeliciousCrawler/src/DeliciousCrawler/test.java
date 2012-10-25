@@ -4,7 +4,8 @@
  */
 package DeliciousCrawler;
 
-import lib.tools.LanguageFilter;
+import lib.tools.Language;
+import lib.tools.RegexChecking;
 
 /**
  *
@@ -13,8 +14,10 @@ import lib.tools.LanguageFilter;
 public class test {
       public static void main(String[] args) throws InterruptedException {
               
-      LanguageFilter lang = new LanguageFilter();
+      Language lang = new Language();
       //lang.CheckSpecialCharacter();
-        lang.CheckSpecialCharacter();
+        //lang.CheckSpecialCharacter();
+      lang.CheckAndCleanSpecialCharacter();
+      
     }
 }

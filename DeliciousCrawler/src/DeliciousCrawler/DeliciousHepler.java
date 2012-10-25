@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import lib.tools.HtmlContent;
+import lib.tools.Language;
 import lib.tools.MD5Convertor;
 import model.dao.*;
 import model.pojo.*;
@@ -34,7 +35,7 @@ public class DeliciousHepler {
     static org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(DeliciousCom.class);
     public static int getRecentTag() throws MalformedURLException, IOException {
         JSONParser jsonParser = new JSONParser();
-
+        Language lang =new Language();
         
         String jsonDataString = getResponeData(String.format("http://feeds.delicious.com/v2/json/recent?count=1000"));
         if (jsonDataString != null) {
@@ -70,6 +71,9 @@ public class DeliciousHepler {
                             if (objtag.length() > 200) {
                                 continue;
                             }
+                            
+                            if (lang.isContainOnlySpecialCharacter(objtag)) continue;
+                            if (!lang.isContainUnicodeCharacterOnly(objtag)) continue;
 
                             TagCollectDAO dao = new TagCollectDAO();
                             if (dao.checkDuplicate(objtag, ts)) {
@@ -199,18 +203,49 @@ public class DeliciousHepler {
         }
         return false;
     }
-   public static synchronized boolean getAndSaveBookmarkOnly(String bookmark) throws ParseException {
+      public static synchronized boolean getAndSaveBookmarkInfo(Link link) throws ParseException, MalformedURLException, IOException {
+        JSONParser jsonParser = new JSONParser();
+        String bookmark = MD5Convertor.Convert2MD5(link.getUrl());
+//        
+        String linkInfo = getResponeData(String.format("http://feeds.delicious.com/v2/json/urlinfo/%s", bookmark));
+        int totalPost = 0;
+        if (linkInfo != null) {
+            JSONArray infoArray = (JSONArray) jsonParser.parse(linkInfo);
+            if (infoArray.size() == 0) {
+                return false;
+            }
+            totalPost = Integer.parseInt(((JSONObject) infoArray.get(0)).get("total_posts").toString());
+            if (((JSONObject) infoArray.get(0)).get("hash") != null) {
+                link.setHash(((JSONObject) infoArray.get(0)).get("hash").toString());
+            }
+            if (((JSONObject) infoArray.get(0)).get("title") != null) {
+                link.setTitle(((JSONObject) infoArray.get(0)).get("title").toString());
+            }
+            link.setTotalPosts(totalPost);
+            
+            LinkDAO docdao = new LinkDAO();
+            try {
+                docdao.saveOrUpdateObject(link);
+            //    System.out.println("Da luu Link "+ doc.getLinkId());
+                return true;
+            } catch (Exception ex) {
+                System.out.println("------------------Trung khoa chinh--------------");
+            }
+
+            //System.out.println("Save 1 more book mark"); 
+        }
+        return false;
+    }
+   
+      public static synchronized boolean getAndSaveBookmarkOnly(String bookmark) throws ParseException {
       
         int DocID = LinkDAO.nextIndex();
-        
-
         Link doc = new Link();
         //get info document
             LinkDAO docdao = new LinkDAO();        
             int index = docdao.processDuplicate(bookmark);
             if (index != -1) {
-                //  DocID = index;
-              //  System.out.println("Link da ton tai" + index);
+             
                 return false;
             }
             doc.setLinkId(DocID);
@@ -225,18 +260,12 @@ public class DeliciousHepler {
             //System.out.println("Save 1 more book mark"); 
             return false;
     }
-    public static void getAndSaveBookmarkHistoryByLink(Link doc) throws ParseException, MalformedURLException, IOException {
+   
+   public static void getAndSaveBookmarkHistoryByLink(Link doc) throws ParseException, MalformedURLException, IOException {
         JSONParser jsonParser = new JSONParser();
-
         String jsonDataString = "";
         String bookmark = MD5Convertor.Convert2MD5(doc.getUrl());
         
-        try {
-            Thread.sleep(1000);
-            //System.out.println(totalPost);
-        } catch (InterruptedException ex) {
-            Logger.getLogger(DeliciousHepler.class.getName()).log(Level.SEVERE, null, ex);
-        }
         
         jsonDataString = getResponeData(String.format("http://feeds.delicious.com/v2/json/url/%s?count=%d", bookmark, 1000));
         if (jsonDataString != null) {
@@ -329,6 +358,7 @@ public class DeliciousHepler {
 
         }
       }
+    
     public static void getAndSaveBookmarkHistory(String bookmark) throws ParseException, MalformedURLException, IOException {
         JSONParser jsonParser = new JSONParser();
 
@@ -472,6 +502,7 @@ public class DeliciousHepler {
 
 
     }
+  //get and save follower
     public static void getFollower(Author a) throws MalformedURLException, IOException{
          JSONParser jsonParser = new JSONParser();
 
