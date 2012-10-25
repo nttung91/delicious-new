@@ -28,12 +28,10 @@ public class LinkByTag extends Thread {
         super(tg,name);
         this.state =0;
         this.name = name;
-        
-        
-         list = DatabaseHelper.getMostPopularTag(1000);
-         this.peroid = list.size()/numberOfThread+1;
-         this.start = thread * this.peroid+currentPosition;
-         logger.info(String.format("%s started.\n", name));
+        list = DatabaseHelper.getMostPopularTag(500);
+        this.peroid = list.size()/numberOfThread+1;
+        this.start = thread * this.peroid+currentPosition;
+        logger.info(String.format("%s started.\n", name));
         System.out.printf("%s started.\n", name);
         start();
     }
@@ -45,12 +43,14 @@ public class LinkByTag extends Thread {
          logger.info(String.format("%s started.\n", name));
         System.out.printf("%s started.\n", name);
         start();
-    } 
+    }
     @Override
     public void run() {
 
-       //getRecentBookmarkByTag(list,name,start,start+peroid);
+       getRecentBookmarkByTag(list,name,start,start+peroid);
        //getLinkHistory();
+       
+   
     }
 
     public void getRecentBookmarkByTag(List<String> list,String threadname,int start,int end) {
@@ -113,6 +113,28 @@ public class LinkByTag extends Thread {
             }
         }
     }
+    public void getAndSaveLinkInfo(List<Link> l,int start,int end){
+        System.out.println("Reading......link............");
+        
+       
+        
+         System.out.println("Read completely !!");
+         for (int i=start;i<end && i<l.size();i++){
+            try {
+                if (l.get(i).getLinkId()< start) continue;
+                if (!l.get(i).getHash().equals("")) continue;
+                DeliciousHepler.getAndSaveBookmarkInfo(l.get(i));
+                System.out.println("Get info for link have id =#"+l.get(i).getLinkId());
+                logger.info("Get info for link have id =#"+l.get(i).getLinkId());
+            } catch (ParseException ex) {
+                Logger.getLogger(LinkByTag.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (MalformedURLException ex) {
+                Logger.getLogger(LinkByTag.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (IOException ex) {
+                Logger.getLogger(LinkByTag.class.getName()).log(Level.SEVERE, null, ex);
+            }
+         }
+    }
     public void getLinkInfo(){
          System.out.println("Reading......link............");
          LinkDAO dao = new LinkDAO();
@@ -149,18 +171,18 @@ public class LinkByTag extends Thread {
     public static void main(String[] args) throws InterruptedException {
         
          // getLinkHistory();
-        //run only one thread
-        List<String> list = DatabaseHelper.getMostPopularTag(1000);
-        LinkByTag lbt = new LinkByTag("Main",1000);
-        lbt.getRecentBookmarkByTag(list,"main",1,100);
-        /*
+//        //run only one thread
+//        List<String> list = DatabaseHelper.getMostPopularTag(1000);
+//        LinkByTag lbt = new LinkByTag("Main",1000);
+//        lbt.getRecentBookmarkByTag(list,"main",1,300);
+        
         ThreadGroup rootGroup = Thread.currentThread().getThreadGroup();
         ThreadGroup parentGroup;
         while ((parentGroup = rootGroup.getParent()) != null) {
             rootGroup = parentGroup;
         }
         
-         LinkByTag[] threads = new LinkByTag[1];
+         LinkByTag[] threads = new LinkByTag[3];
           for (int i = 0;i<threads.length;i++){
                     if (threads[i]==null) {
                         threads[i] = new LinkByTag("Thread #"+(i+1),i,0,threads.length, rootGroup);
@@ -171,7 +193,7 @@ public class LinkByTag extends Thread {
         boolean stopAll = false;
         int maxRetry = 10000;
         while (true){
-               
+               Thread.sleep(60000);
                 for (int i = 0;i<threads.length;i++){
                     if (restartCount[i]>maxRetry) {
                         stopAll = true;
@@ -189,6 +211,6 @@ public class LinkByTag extends Thread {
                     }
                 }
                 
-        }*/
+        }
     }
 }

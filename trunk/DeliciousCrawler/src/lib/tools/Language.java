@@ -11,12 +11,13 @@ import java.util.regex.Pattern;
 import javax.sound.sampled.AudioFormat;
 import model.dao.TagCollectDAO;
 import model.pojo.TagCollect;
+import org.hibernate.HibernateException;
 
 /**
  *
  * @author THANHTUNG
  */
-public class LanguageFilter {
+public class Language {
 
     Pattern input = Pattern.compile("\\w+");
 
@@ -69,12 +70,28 @@ public class LanguageFilter {
         }
         System.out.printf("English %d  => Not English: %d", count, count1);
     }
+     public boolean isContainUnicodeCharacterOnly(String s) {
+        //get data
+        
+        Pattern p = Pattern.compile("[^\u0000-\u0080]+");
+     
+        
+            Matcher m = p.matcher(s);
+
+            if (!m.find()) {
+               return true;
+            } else {
+                return false;
+            }
+
+      
+    }
 
     public boolean isContainOnlySpecialCharacter(String s) {
-        String spec = "!@#$%^&*()_-=+<>?";
+        String spec = "!@#$%^&*()_-=+<>?,.";
         char[] specialCh =spec.toCharArray() ;
         char[] arr = s.toCharArray();
-        boolean notContainSpecChar = false;
+        
         for (int i = 0; i < arr.length; i++) {
             boolean f = false;
             //is special char
@@ -92,7 +109,7 @@ public class LanguageFilter {
         return true;
     }
 
-    public void CheckSpecialCharacter() {
+    public void CheckAndCleanSpecialCharacter() {
         //get data
         TagCollectDAO dao = new TagCollectDAO();
         System.out.println("Start...");
@@ -108,7 +125,7 @@ public class LanguageFilter {
 
                 count++;
             } else {
-                System.out.printf("%s => only\n", list.get(i).getTagName());
+                //System.out.printf("%s => only\n", list.get(i).getTagName());
                 dao.deleteObject(list.get(i));
                 count1++;
             }
@@ -116,6 +133,23 @@ public class LanguageFilter {
         }
         System.out.printf("English %d  => Not English: %d", count, count1);
     }
-
+    public void lowerizeText(){
+        //use for tag collect
+        TagCollectDAO dao = new TagCollectDAO();
+        System.out.println("Reading........!");
+        List<TagCollect> list = dao.getList();
+        System.out.println("Read comletely!");
+        for (int i =0;i<list.size();i++){
+            TagCollect tc = list.get(i);
+            tc.setTagName(list.get(i).getTagName().toLowerCase());
+            try{
+            dao.saveOrUpdateObject(tc);
+        
+            } catch (HibernateException ex){
+                ex.printStackTrace();
+            }
+        }
+        System.out.println("Converted comletely!");
+    }
     
 }
