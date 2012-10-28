@@ -8,8 +8,6 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import lib.tools.HtmlContent;
 import lib.tools.Language;
 import lib.tools.MD5Convertor;
@@ -118,24 +116,7 @@ public class DeliciousHepler {
         }
         return null;
     }
-    public static ArrayList<String> getPopularListBookmarkByTag(String tag, int count) throws ParseException, MalformedURLException, IOException {
-        JSONParser jsonParser = new JSONParser();
-        String bookmarks = getResponeData(String.format("http://feeds.delicious.com/v2/json/popular/%s?count=%d", tag, count));
-        if (bookmarks != null) {
-            JSONArray jsonArray = (JSONArray) jsonParser.parse(bookmarks);
-            ArrayList<String> l = new ArrayList<>();
-            for (int i = 0; i < jsonArray.size(); i++) {
-                JSONObject obj = (JSONObject) jsonArray.get(i);
-                if (obj.get("u") != null && !obj.get("u").toString().equals("")) {
-                    l.add(obj.get("u").toString().trim());
-                }
-
-            }
-            return l;
-        }
-        return null;
-    }
-
+   
     public static ArrayList<String> getRecentBookmarks(int count) throws ParseException, MalformedURLException, IOException {
         JSONParser jsonParser = new JSONParser();
         String bookmarks = getResponeData(String.format("http://feeds.delicious.com/v2/json/recent?count=%d", count));
@@ -153,57 +134,7 @@ public class DeliciousHepler {
         return null;
     }
     
-    public static synchronized boolean getAndSaveBookmarkInfo(String bookmark) throws ParseException, MalformedURLException, IOException {
-        JSONParser jsonParser = new JSONParser();
-        bookmark = MD5Convertor.Convert2MD5(bookmark);
-        //get number of post in this link
-        String linkInfo = getResponeData(String.format("http://feeds.delicious.com/v2/json/urlinfo/%s", bookmark));
-        int totalPost = 0;
-        int DocID = LinkDAO.nextIndex();
-        Link doc = new Link();
-        //get info document
-        if (linkInfo != null) {
-
-            JSONArray infoArray = (JSONArray) jsonParser.parse(linkInfo);
-            if (infoArray.size() == 0) {
-                return false;
-            }
-            totalPost = Integer.parseInt(((JSONObject) infoArray.get(0)).get("total_posts").toString());
-            //System.out.println("Total post count:" + totalPost);
-
-            if (((JSONObject) infoArray.get(0)).get("hash") != null) {
-                doc.setHash(((JSONObject) infoArray.get(0)).get("hash").toString());
-            }
-            if (((JSONObject) infoArray.get(0)).get("title") != null) {
-                doc.setTitle(((JSONObject) infoArray.get(0)).get("title").toString());
-            }
-
-            doc.setTotalPosts(totalPost);
-            if (((JSONObject) infoArray.get(0)).get("url") != null) {
-                doc.setUrl(((JSONObject) infoArray.get(0)).get("url").toString());
-            }
-            LinkDAO docdao = new LinkDAO();
-            
-            int index = docdao.processDuplicate(doc.getUrl());
-            if (index != -1) {
-                //  DocID = index;
-              //  System.out.println("Link da ton tai" + index);
-                return false;
-            }
-            doc.setLinkId(DocID);
-            try {
-                docdao.saveOrUpdateObject(doc);
-            //    System.out.println("Da luu Link "+ doc.getLinkId());
-                return true;
-            } catch (Exception ex) {
-                System.out.println("------------------Trung khoa chinh--------------");
-            }
-
-            //System.out.println("Save 1 more book mark"); 
-        }
-        return false;
-    }
-      public static synchronized boolean getAndSaveBookmarkInfo(Link link) throws ParseException, MalformedURLException, IOException {
+    public static synchronized boolean getAndSaveBookmarkInfo(Link link) throws ParseException, MalformedURLException, IOException {
         JSONParser jsonParser = new JSONParser();
         String bookmark = MD5Convertor.Convert2MD5(link.getUrl());
 //        
@@ -261,11 +192,10 @@ public class DeliciousHepler {
             return false;
     }
    
-   public static void getAndSaveBookmarkHistoryByLink(Link doc) throws ParseException, MalformedURLException, IOException {
+   public static synchronized void getAndSaveBookmarkHistoryByLink(Link doc) throws ParseException, MalformedURLException, IOException {
         JSONParser jsonParser = new JSONParser();
         String jsonDataString = "";
         String bookmark = MD5Convertor.Convert2MD5(doc.getUrl());
-        
         
         jsonDataString = getResponeData(String.format("http://feeds.delicious.com/v2/json/url/%s?count=%d", bookmark, 1000));
         if (jsonDataString != null) {
@@ -273,8 +203,8 @@ public class DeliciousHepler {
                 JSONArray jsonArray = (JSONArray) jsonParser.parse(jsonDataString);
                 //end of doc
                 SaveLinkDAO pdao = new SaveLinkDAO();
-                  logger.info(String.format("Doc #%d So post got:%d/%d\n",doc.getLinkId(),jsonArray.size(),doc.getTotalPosts()));
-                   System.out.printf("Doc #%d So post got:%d/%d\n",doc.getLinkId(),jsonArray.size(),doc.getTotalPosts());
+                  logger.info(String.format("Link #%d Number of author saved:%d/%d\n",doc.getLinkId(),jsonArray.size(),doc.getTotalPosts()));
+                   System.out.printf("Link #%d Number of author saved :%d/%d\n",doc.getLinkId(),jsonArray.size(),doc.getTotalPosts());
                 for (int i = 0; i < jsonArray.size(); i++) {
                     SaveLink post = new SaveLink();
                     JSONObject obj = (JSONObject) jsonArray.get(i);
@@ -282,12 +212,15 @@ public class DeliciousHepler {
                     if (obj.get("a") != null) {
                         AuthorDAO auDao = new AuthorDAO();
                         Author a = auDao.getObjectByName(obj.get("a").toString());
+                        
                         if (a!=null){
+                            a.setIsFollowed(1);
                             post.setAuthor(a);
                         }
                         else {
                             Author au = new Author(AuthorDAO.nextIndex());
                             au.setAuthorName(obj.get("a").toString());
+                            au.setIsFollowed(1);
                             post.setAuthor(au);
                         }
                         if (obj.get("a").toString().equals("")) {
@@ -310,12 +243,12 @@ public class DeliciousHepler {
                         // System.out.println(date);
                         post.setDateSave(Timestamp.valueOf(date));
                     }
-                    int res = pdao.checkDuplicateItem(doc.getLinkId(), post.getAuthor().getAuthorName(), post.getDateSave());
+                    int res = pdao.checkDuplicateItem(doc.getLinkId(), post.getAuthor().getAuthorId(), post.getDateSave());
                     if (res == -1) {
                         post.setSaveLinkId(SaveLinkDAO.nextIndex());
                     } else {
                         if (res == -2) {
-                            System.out.println("---------Trung vs older-----------");
+                           // System.out.println("---------Trung vs older-----------");
                             continue;
                         } else {
                             post.setSaveLinkId(res);
@@ -340,7 +273,7 @@ public class DeliciousHepler {
                             
                             //tag.setTagId(maxTag);
                             //neu do dai lon hon 200 thi bo wa
-                            if (objtag.length() > 200) {
+                            if (objtag.length() > 200 || objtag.equals("") || Language.isContainOnlySpecialCharacter(objtag) || !Language.isUnicode(objtag)) {
                                 continue;
                             }
                             tag.setTagName(objtag);
@@ -353,157 +286,15 @@ public class DeliciousHepler {
                 }
             } catch (ParseException | NumberFormatException | HibernateException ex) {
                 ex.printStackTrace();
+                logger.error("Error at link #"+doc.getLinkId());
                 System.out.println("--------------------Error ---------------");
             }
 
         }
       }
     
-    public static void getAndSaveBookmarkHistory(String bookmark) throws ParseException, MalformedURLException, IOException {
-        JSONParser jsonParser = new JSONParser();
-
-        String jsonDataString = "";
-        bookmark = MD5Convertor.Convert2MD5(bookmark);
-        //get number of post in this link
-        String linkInfo = getResponeData(String.format("http://feeds.delicious.com/v2/json/urlinfo/%s", bookmark));
-
-
-
-        int totalPost = 0;
-        int DocID = LinkDAO.nextIndex();
-        try {
-            Thread.sleep(1000);
-            //System.out.println(totalPost);
-        } catch (InterruptedException ex) {
-            Logger.getLogger(DeliciousHepler.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-        jsonDataString = getResponeData(String.format("http://feeds.delicious.com/v2/json/url/%s?count=%d", bookmark, 1000));
-        if (jsonDataString != null) {
-            try {
-                JSONArray jsonArray = (JSONArray) jsonParser.parse(jsonDataString);
-                //get doc
-
-                Link doc = new Link();
-                //get info document
-                if (linkInfo != null) {
-
-                    JSONArray infoArray = (JSONArray) jsonParser.parse(linkInfo);
-                    if (infoArray.size() == 0) {
-                        return;
-                    }
-                    totalPost = Integer.parseInt(((JSONObject) infoArray.get(0)).get("total_posts").toString());
-                    System.out.println("Total post count:" + totalPost);
-
-                    if (((JSONObject) infoArray.get(0)).get("hash") != null) {
-                        doc.setHash(((JSONObject) infoArray.get(0)).get("hash").toString());
-                    }
-                    if (((JSONObject) infoArray.get(0)).get("title") != null) {
-                        doc.setTitle(((JSONObject) infoArray.get(0)).get("title").toString());
-                    }
-
-                    doc.setTotalPosts(totalPost);
-                    if (((JSONObject) infoArray.get(0)).get("url") != null) {
-                        doc.setUrl(((JSONObject) infoArray.get(0)).get("url").toString());
-                    }
-                    LinkDAO docdao = new LinkDAO();
-                    int index = docdao.processDuplicate(doc.getUrl());
-                    if (index != -1) {
-                        DocID = index;
-                        System.out.println("Da xoa document " + index);
-                    }
-                    doc.setLinkId(DocID);
-                }
-                //end of doc
-                SaveLinkDAO pdao = new SaveLinkDAO();
-                System.out.println("So post got:" + jsonArray.size());
-                for (int i = 0; i < jsonArray.size(); i++) {
-                    SaveLink post = new SaveLink();
-
-                    JSONObject obj = (JSONObject) jsonArray.get(i);
-
-                   if (obj.get("a") != null) {
-                        AuthorDAO auDao = new AuthorDAO();
-                        Author a = auDao.getObjectByName(obj.get("a").toString());
-                        if (a!=null){
-                            post.setAuthor(a);
-                        }
-                        else {
-                            Author au = new Author(AuthorDAO.nextIndex());
-                            au.setAuthorName(obj.get("a").toString());
-                        }
-                        if (obj.get("a").toString().equals("")) {
-                            continue;
-                        }
-                    } else {
-                        continue;
-                    }
-
-                    if (obj.get("d") != null) {
-                        post.setDescription(obj.get("d").toString());
-                    }
-
-                    if (obj.get("n") != null) {
-                        post.setDescription(obj.get("n").toString());
-                    }
-                    if (obj.get("dt") != null) {
-                        String date = obj.get("dt").toString();
-                        date = date.replace("T", " ").replace("Z", "");
-                        // System.out.println(date);
-                        post.setDateSave(Timestamp.valueOf(date));
-                    }
-                    int res = pdao.checkDuplicateItem(doc.getLinkId(), post.getAuthor().getAuthorName(), post.getDateSave());
-                    if (res == -1) {
-                        post.setSaveLinkId(SaveLinkDAO.nextIndex());
-                    } else {
-                        if (res == -2) {
-                            System.out.println("---------Trung vs older-----------");
-                            continue;
-                        } else {
-                            post.setSaveLinkId(res);
-                            System.out.println("---------Trung vs update -----------");
-                        }
-                    }
-
-                    post.setLink(doc);
-                    try {
-
-                        pdao.saveOrUpdateObject(post);
-                    } catch (HibernateException ex) {
-                        ex.printStackTrace();
-                    }
-                    //Set<Tag> tags = new HashSet<>();
-                      if (obj.get("t") != null) {
-
-                        JSONArray arrTag = (JSONArray) obj.get("t");
-                        //   System.out.println("So tag:"+arrTag.size());
-                        for (int j = 0; j < arrTag.size(); j++) {
-                            String objtag = (String) arrTag.get(j);
-                            Tag tag = new Tag(TagDAO.nextIndex(objtag));
-                            
-                            //tag.setTagId(maxTag);
-                            //neu do dai lon hon 200 thi bo wa
-                            if (objtag.length() > 200) {
-                                continue;
-                            }
-                            tag.setTagName(objtag);
-                            TagLinkId id = new TagLinkId( post.getSaveLinkId(),tag.getTagId());
-                            TagLink tfp = new TagLink(id, tag, post);
-                            TagLinkDAO tfpdao = new TagLinkDAO();
-                            tfpdao.saveOrUpdateObject(tfp);
-                        }
-                    }
-                }
-            } catch (ParseException | NumberFormatException | HibernateException ex) {
-                System.out.println("--------------------Error ---------------");
-            }
-
-        }
-
-
-    }
-  //get and save follower
-    public static void getFollower(Author a) throws MalformedURLException, IOException{
+    //get and save follower
+    public static synchronized void getFollower(Author a) throws MalformedURLException, IOException{
          JSONParser jsonParser = new JSONParser();
 
         
@@ -511,9 +302,9 @@ public class DeliciousHepler {
         if (jsonDataString != null) {
              try {
                 JSONArray jsonArray = (JSONArray) jsonParser.parse(jsonDataString);
-                int count = 0;
-                logger.info(String.format("So follower lay dc:" + jsonArray.size()));
-                System.out.println("So follower lay dc:" + jsonArray.size());
+                
+                logger.info("Number of follower of Author #"+a.getAuthorId()+":" + jsonArray.size());
+                System.out.println("Number of follower of Author #"+a.getAuthorId()+":" + jsonArray.size());
                 for (int i = 0; i < jsonArray.size(); i++) {
 
                     JSONObject obj = (JSONObject) jsonArray.get(i);
@@ -528,28 +319,30 @@ public class DeliciousHepler {
                         AuthorDAO daoA = new AuthorDAO();
                         FollowingDAO daoF = new FollowingDAO();
                         Following fo = new Following();
-                        Author f = daoA.getObjectByName(obj.get("user").toString().trim());
                          fo.setAuthorByFollowee(a);
                          fo.setDateFollow(ts);
+                        Author f = daoA.getObjectByName(obj.get("user").toString().trim());
                         if (f!=null) {
                                FollowingId id = new FollowingId(f.getAuthorId(), a.getAuthorId());
-                              
+                               fo.setId(id);
                                fo.setAuthorByFollower(f);
-                               daoF.saveOrUpdateObject(fo);
+                              
                         }
                         else {
                             f = new Author(AuthorDAO.nextIndex());
-                            f.setAuthorName(obj.get("a").toString().trim());
+                            f.setAuthorName(obj.get("user").toString().trim());
+                            f.setIsFollowed(0);
                             FollowingId id = new FollowingId(f.getAuthorId(), a.getAuthorId());
+                            fo.setId(id);
                             fo.setAuthorByFollower(f);
                         }
-                        
-                     
+                         daoF.saveOrUpdateObject(fo);
                     }
                 }
                 
             } catch (ParseException | NumberFormatException | HibernateException ex) {
                 System.out.println("--------------------Error ---------------");
+                ex.printStackTrace();
             }
         
         }

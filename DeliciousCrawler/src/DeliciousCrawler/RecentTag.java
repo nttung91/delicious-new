@@ -14,14 +14,35 @@ import java.util.logging.Logger;
  *
  * @author THANHTUNG
  */
-public class RecentTag {
+public class RecentTag extends Thread{
 
 
-  
+    boolean isContinue;
+    String name;
+    public RecentTag(String name,ThreadGroup tg) {
+        super(tg, name);
+        isContinue = true;
+        this.name = name;
+       
+    }
+    @Override
+    public void run(){
+        try {
+            getRecentTag();
+        } catch (InterruptedException ex) {
+            Logger.getLogger(RecentTag.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    public boolean isIsContinue() {
+        return isContinue;
+    }
+
+    public void setIsContinue(boolean isContinue) {
+        this.isContinue = isContinue;
+    }
     public void getRecentTag() throws InterruptedException{
-         int i = 10;
         int delaytime = 50;
-        while (true){
+        while (isContinue){
             try {
                 delaytime +=DeliciousHepler.getRecentTag();
             } catch (MalformedURLException ex) {
@@ -35,9 +56,4 @@ public class RecentTag {
         }
     }
     
-    public static void main(String[] args) throws InterruptedException {
-              
-        RecentTag rt = new RecentTag();
-        rt.getRecentTag();
-    }
 }

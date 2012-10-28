@@ -4,8 +4,11 @@
  */
 package model.dao;
 
+import java.util.List;
 import model.pojo.Author;
+import model.pojo.Link;
 import model.util.HibernateUtil;
+import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.classic.Session;
 
@@ -17,7 +20,7 @@ public class AuthorDAO extends  ObjectDAO<Author, Integer> {
 
     @Override
     protected Class getPOJOClass() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return Author.class;
     }
      public static int nextIndex(){
          Session session = HibernateUtil.getSessionFactory().openSession();
@@ -36,6 +39,16 @@ public class AuthorDAO extends  ObjectDAO<Author, Integer> {
         }
         
      }
+      public List<Author> getListFiltered() throws HibernateException{
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        List<Author> list= null;
+        String hql = String.format("select obj from Author obj  where obj.isFollowed = :follow order by obj.authorId ");
+        Query query = session.createQuery(hql);
+        query.setParameter("follow",1);
+        list = query.list();
+        session.close();
+        return list;
+    }
       public Author getObjectByName(String name){
          Session session = HibernateUtil.getSessionFactory().openSession();
         String hql = "from Author obj where obj.authorName=:name";

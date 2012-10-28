@@ -17,18 +17,16 @@ import org.hibernate.classic.Session;
  */
 public class SaveLinkDAO extends ObjectDAO<SaveLink, Integer> {
 
-    public int checkDuplicateItem(int linkID, String author, Timestamp date) {
+    public int checkDuplicateItem(int linkID, int authorId, Timestamp date) {
         Session session = HibernateUtil.getSessionFactory().openSession();
-        String hql = "from SaveLink p where p.author.authorName=:user and p.link.linkId=:linkId";
+        String hql = "from SaveLink p where p.author.authorId=:userid and p.link.linkId=:linkId";
         Query query = session.createQuery(hql);
-        query.setParameter("user",author);
+        query.setParameter("userid",authorId);
         query.setParameter("linkId", linkID);
-        List<SaveLink> l = query.list();
-        if (l != null && l.size()>0 ){
-            SaveLink p = l.get(0);
-
-            if (date.compareTo(p.getDateSave()) > 0) {
-                return p.getSaveLinkId();
+        SaveLink sl = (SaveLink)query.uniqueResult();
+        if (sl != null){
+            if (date.compareTo(sl.getDateSave()) > 0) {
+                return sl.getSaveLinkId();
             } else {
                 //cu hon
                 return -2;
