@@ -13,6 +13,15 @@ public class Author  implements java.io.Serializable {
 
      private int authorId;
      private String authorName;
+     private int isFollowed;
+
+    public int getIsFollowed() {
+        return isFollowed;
+    }
+
+    public void setIsFollowed(int isFollowed) {
+        this.isFollowed = isFollowed;
+    }
      private Set saveLinks = new HashSet(0);
      private Set followingsForFollowee = new HashSet(0);
      private Set followingsForFollower = new HashSet(0);

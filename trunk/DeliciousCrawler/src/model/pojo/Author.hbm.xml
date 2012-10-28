@@ -11,6 +11,9 @@
         <property name="authorName" type="string">
             <column name="author_name" length="100" />
         </property>
+        <property name="isFollowed" type="int">
+            <column name="is_followed"/>
+        </property>
         <set name="saveLinks" inverse="true">
             <key>
                 <column name="author_id" />

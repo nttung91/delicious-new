@@ -20,8 +20,12 @@ import org.hibernate.HibernateException;
 public class Language {
 
     Pattern input = Pattern.compile("\\w+");
-
-    public void CleanNotEnglish() {
+    public static boolean isUnicode(String s){
+         Pattern p = Pattern.compile("[^\u0000-\u0080]+");
+         Matcher m = p.matcher(s);
+         return !m.find();
+    }
+    public static void CleanNotEnglish() {
         TagCollectDAO dao = new TagCollectDAO();
         System.out.println("Start...");
         System.out.println("Reading...");
@@ -48,7 +52,7 @@ public class Language {
         System.out.printf("English %d  => Not English: %d", count, count1);
     }
 
-    public void CheckEnglish() {
+    public static void CheckEnglish() {
         //get data
         TagCollectDAO dao = new TagCollectDAO();
         System.out.println("Start...");
@@ -87,7 +91,7 @@ public class Language {
       
     }
 
-    public boolean isContainOnlySpecialCharacter(String s) {
+    public static boolean isContainOnlySpecialCharacter(String s) {
         String spec = "!@#$%^&*()_-=+<>?,.";
         char[] specialCh =spec.toCharArray() ;
         char[] arr = s.toCharArray();
@@ -109,7 +113,7 @@ public class Language {
         return true;
     }
 
-    public void CheckAndCleanSpecialCharacter() {
+    public static void CheckAndCleanSpecialCharacter() {
         //get data
         TagCollectDAO dao = new TagCollectDAO();
         System.out.println("Start...");
