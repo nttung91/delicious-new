@@ -20,6 +20,7 @@ public class AuthorDAO extends  ObjectDAO<Author, Integer> {
 
     @Override
     protected Class getPOJOClass() {
+        
         return Author.class;
     }
      public static int nextIndex(){
@@ -45,6 +46,16 @@ public class AuthorDAO extends  ObjectDAO<Author, Integer> {
         String hql = String.format("select obj from Author obj  where obj.isFollowed = :follow order by obj.authorId ");
         Query query = session.createQuery(hql);
         query.setParameter("follow",1);
+        list = query.list();
+        session.close();
+        return list;
+    }
+      public List<Author> getListOrdered() throws HibernateException{
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        List<Author> list= null;
+        String hql = String.format("select obj from Author obj order by obj.authorId ");
+        Query query = session.createQuery(hql);
+
         list = query.list();
         session.close();
         return list;

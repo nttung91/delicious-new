@@ -28,7 +28,7 @@ public class LinkByTag extends Thread {
         super(tg,name);
         this.state =0;
         this.name = name;
-        list = DatabaseHelper.getMostPopularTag(500);
+        list = DatabaseHelper.getMostPopularTag(200);
         this.peroid = list.size()/numberOfThread+1;
         this.start = thread * this.peroid+currentPosition;
         logger.info(String.format("%s started.\n", name));
@@ -51,12 +51,13 @@ public class LinkByTag extends Thread {
        // Random random = new Random();
         int j=0;
         try {
+            System.out.println(start +"--"+end);
             for (j=start;j<=end && j<taglist.size();j++) {
          //       int j = random.nextInt(taglist.size());
-                if (taglist.get(j).contains(" ")) continue;
+                //if (taglist.get(j).contains(" ")) continue;
             //    Thread.currentThread().sleep(500);
                 l = DeliciousHepler.getRecentListBookmarkByTag(taglist.get(j), 1000);
-                
+                 System.out.println(l.size());
                 if (l != null && l.size() > 0) {
                     int count =0;
                     for (int i = 0; i < l.size(); i++) {
@@ -103,7 +104,7 @@ public class LinkByTag extends Thread {
             rootGroup = parentGroup;
         }
         
-         LinkByTag[] threads = new LinkByTag[3];
+         LinkByTag[] threads = new LinkByTag[2];
           for (int i = 0;i<threads.length;i++){
                     if (threads[i]==null) {
                         threads[i] = new LinkByTag("Thread #"+(i+1),i,0,threads.length, rootGroup);

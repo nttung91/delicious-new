@@ -79,68 +79,68 @@ public class GetLinkInfo extends Thread {
     }
 
     public static void main(String[] args) throws InterruptedException {
-        LinkDAO dao = new LinkDAO();
-        List<Link> l = dao.getListOrdered();
-        for (int i = 0; i< l.size();i++)
-        {
-                
-                try {
+//        LinkDAO dao = new LinkDAO();
+//        List<Link> l = dao.getListOrdered();
+//        for (int i = 0; i< l.size();i++)
+//        {
+//                
+//                try {
+//
+//                if (l.get(i).getHash() != null) {
+//                    continue;
+//                }
+//                DeliciousHepler.getAndSaveBookmarkInfo(l.get(i));
+//                System.out.printf(" Get info Id :%d at link #%d\n",l.get(i).getLinkId(),i);
+//            } catch (ParseException ex) {
+//
+//                Logger.getLogger(GetLinkInfo.class.getName()).log(Level.SEVERE, null, ex);
+//            } catch (MalformedURLException ex) {
+//
+//                Logger.getLogger(GetLinkInfo.class.getName()).log(Level.SEVERE, null, ex);
+//            } catch (IOException ex) {
+//
+//                Logger.getLogger(GetLinkInfo.class.getName()).log(Level.SEVERE, null, ex);
+//            }
+//        }
 
-                if (l.get(i).getHash() != null) {
-                    continue;
-                }
-                DeliciousHepler.getAndSaveBookmarkInfo(l.get(i));
-                System.out.printf(" Get info Id :%d at link #%d\n",l.get(i).getLinkId(),i);
-            } catch (ParseException ex) {
 
-                Logger.getLogger(GetLinkInfo.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (MalformedURLException ex) {
 
-                Logger.getLogger(GetLinkInfo.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (IOException ex) {
+        ThreadGroup rootGroup = Thread.currentThread().getThreadGroup();
+        ThreadGroup parentGroup;
+        while ((parentGroup = rootGroup.getParent()) != null) {
+            rootGroup = parentGroup;
+        }
+        int duration = 1000;
+        GetLinkInfo[] threads = new GetLinkInfo[1];
+        for (int i = 0; i < threads.length; i++) {
+            if (threads[i] == null) {
 
-                Logger.getLogger(GetLinkInfo.class.getName()).log(Level.SEVERE, null, ex);
+                threads[i] = new GetLinkInfo( rootGroup,i,duration,threads.length);
             }
         }
+        int[] restartCount = new int[threads.length];
+        boolean stopAll = false;
+        int maxRetry = 10000;
+        
+        while (true) {
+            Thread.sleep(60000);
+            for (int i = 0; i < threads.length; i++) {
+                if (restartCount[i] > maxRetry) {
+                    stopAll = true;
+                }
+                if (stopAll) {
+                    return;
+                }
+                if (!threads[i].isAlive()) {
+                    
+                       
+                        threads[i] = new GetLinkInfo( rootGroup,i,duration,threads.length);
+                        System.out.println("#" + threads[i].getName() + "Start again");
+                        
+                  
+                }
+            }
 
-
-
-//        ThreadGroup rootGroup = Thread.currentThread().getThreadGroup();
-//        ThreadGroup parentGroup;
-//        while ((parentGroup = rootGroup.getParent()) != null) {
-//            rootGroup = parentGroup;
-//        }
-//        int duration = 1000;
-//        GetLinkInfo[] threads = new GetLinkInfo[3];
-//        for (int i = 0; i < threads.length; i++) {
-//            if (threads[i] == null) {
-//
-//                threads[i] = new GetLinkInfo( rootGroup,i,duration,threads.length);
-//            }
-//        }
-//        int[] restartCount = new int[threads.length];
-//        boolean stopAll = false;
-//        int maxRetry = 10000;
-//        
-//        while (true) {
-//            Thread.sleep(60000);
-//            for (int i = 0; i < threads.length; i++) {
-//                if (restartCount[i] > maxRetry) {
-//                    stopAll = true;
-//                }
-//                if (stopAll) {
-//                    return;
-//                }
-//                if (!threads[i].isAlive()) {
-//                    
-//                       
-//                        threads[i] = new GetLinkInfo( rootGroup,i,duration,threads.length);
-//                        System.out.println("#" + threads[i].getName() + "Start again");
-//                        
-//                  
-//                }
-//            }
-//
-//        }
+        }
     }
 }

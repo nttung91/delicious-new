@@ -6,8 +6,10 @@ package model.dao;
 
 import java.sql.Timestamp;
 import java.util.List;
+import model.pojo.Link;
 import model.pojo.SaveLink;
 import model.util.HibernateUtil;
+import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.classic.Session;
 
@@ -17,7 +19,7 @@ import org.hibernate.classic.Session;
  */
 public class SaveLinkDAO extends ObjectDAO<SaveLink, Integer> {
 
-    public int checkDuplicateItem(int linkID, int authorId, Timestamp date) {
+    public int checkDuplicateItem(int linkID, int authorId) {
         Session session = HibernateUtil.getSessionFactory().openSession();
         String hql = "from SaveLink p where p.author.authorId=:userid and p.link.linkId=:linkId";
         Query query = session.createQuery(hql);
@@ -25,12 +27,7 @@ public class SaveLinkDAO extends ObjectDAO<SaveLink, Integer> {
         query.setParameter("linkId", linkID);
         SaveLink sl = (SaveLink)query.uniqueResult();
         if (sl != null){
-            if (date.compareTo(sl.getDateSave()) > 0) {
-                return sl.getSaveLinkId();
-            } else {
-                //cu hon
-                return -2;
-            }
+            return 0;
 
         } else {
             return -1;
@@ -54,5 +51,14 @@ public class SaveLinkDAO extends ObjectDAO<SaveLink, Integer> {
     @Override
     protected Class getPOJOClass() {
         return SaveLink.class;
+    }
+     public List<Object[]> getListOrdered() throws HibernateException{
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        List<Object[]> list= null;
+        String hql = String.format("select obj.link.linkId,obj.author.authorName from SaveLink obj order by obj.link.linkId");
+        Query query = session.createQuery(hql);
+        list = query.list();
+        session.close();
+        return list;
     }
 }

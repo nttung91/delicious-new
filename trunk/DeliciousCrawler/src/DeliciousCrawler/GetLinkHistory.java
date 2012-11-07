@@ -3,6 +3,7 @@ package DeliciousCrawler;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -49,16 +50,21 @@ public class GetLinkHistory extends Thread {
             int end = start + duration;
             int i;
             for (i = start; i < end && i<list.size(); i++) {
-                if (DatabaseHelper.isCrawled(list.get(i))) continue;
+               
+                if (DatabaseHelper.isCrawled(list.get(i))) 
+                {
+                    continue;
+                }
                 try {
-                    
+                 
                     DeliciousHepler.getAndSaveBookmarkHistoryByLink(list.get(i));
+                  
                 } catch (ParseException ex) {
-                    Logger.getLogger(LinkByTag.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(GetLinkHistory.class.getName()).log(Level.SEVERE, null, ex);
                 } catch (MalformedURLException ex) {
-                    Logger.getLogger(LinkByTag.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(GetLinkHistory.class.getName()).log(Level.SEVERE, null, ex);
                 } catch (IOException ex) {
-                    Logger.getLogger(LinkByTag.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(GetLinkHistory.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
             if (i >= l.size()) {
@@ -81,10 +87,10 @@ public class GetLinkHistory extends Thread {
             rootGroup = parentGroup;
         }
 
-        GetLinkHistory[] threads = new GetLinkHistory[3];
+        GetLinkHistory[] threads = new GetLinkHistory[2];
         for (int i = 0; i < threads.length; i++) {
             if (threads[i] == null) {
-                threads[i] = new GetLinkHistory(rootGroup,i,1000,threads.length);
+                threads[i] = new GetLinkHistory(rootGroup,i,100,threads.length);
 
             }
         }
@@ -102,7 +108,7 @@ public class GetLinkHistory extends Thread {
                 }
                 if (!threads[i].isAlive()) {
                     Thread.sleep(3000);
-                    threads[i] = new GetLinkHistory(rootGroup,i,1000,threads.length);
+                    threads[i] = new GetLinkHistory(rootGroup,i,100,threads.length);
                     System.out.println("#" + threads[i].getName() + "Start again");
                     restartCount[i]++;
                 }

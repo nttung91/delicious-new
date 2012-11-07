@@ -81,4 +81,12 @@ public abstract class ObjectDAO<P,K extends Serializable>{
             return prefix+String.format("%05d", 1);
         }
      }
+     public long count(){
+         Session session = HibernateUtil.getSessionFactory().openSession();
+        String hql = String.format("select count(obj) from %s obj", getPOJOClass().getName());
+        Query query = session.createQuery(hql);
+        long count = (long)query.uniqueResult();
+        session.close();
+        return count;
+     }
 }

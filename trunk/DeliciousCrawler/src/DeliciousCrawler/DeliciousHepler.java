@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import lib.tools.HtmlContent;
 import lib.tools.Language;
 import lib.tools.MD5Convertor;
@@ -30,7 +32,7 @@ public class DeliciousHepler {
         String res = hc.getHtmlContent(url);
         return res;
     }
-    static org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(DeliciousCom.class);
+    //static org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(DeliciousCom.class);
     public static int getRecentTag() throws MalformedURLException, IOException {
         JSONParser jsonParser = new JSONParser();
         Language lang =new Language();
@@ -41,7 +43,7 @@ public class DeliciousHepler {
                 JSONArray jsonArray = (JSONArray) jsonParser.parse(jsonDataString);
                 int count = 0;
                 int count1 = 0;
-                logger.info(String.format("So post lay dc:" + jsonArray.size()));
+               // logger.info(String.format("So post lay dc:" + jsonArray.size()));
                 System.out.println("So post lay dc:" + jsonArray.size());
                 for (int i = 0; i < jsonArray.size(); i++) {
 
@@ -191,24 +193,29 @@ public class DeliciousHepler {
             //System.out.println("Save 1 more book mark"); 
             return false;
     }
-   
-   public static synchronized void getAndSaveBookmarkHistoryByLink(Link doc) throws ParseException, MalformedURLException, IOException {
-        JSONParser jsonParser = new JSONParser();
-        String jsonDataString = "";
-        String bookmark = MD5Convertor.Convert2MD5(doc.getUrl());
-        
-        jsonDataString = getResponeData(String.format("http://feeds.delicious.com/v2/json/url/%s?count=%d", bookmark, 1000));
+   private static synchronized void getAndSaveBookmarkHistoryByLink(Link doc,String jsonDataString){
+       JSONParser jsonParser = new JSONParser();
         if (jsonDataString != null) {
             try {
+                
                 JSONArray jsonArray = (JSONArray) jsonParser.parse(jsonDataString);
+                 
                 //end of doc
                 SaveLinkDAO pdao = new SaveLinkDAO();
-                  logger.info(String.format("Link #%d Number of author saved:%d/%d\n",doc.getLinkId(),jsonArray.size(),doc.getTotalPosts()));
-                   System.out.printf("Link #%d Number of author saved :%d/%d\n",doc.getLinkId(),jsonArray.size(),doc.getTotalPosts());
-                for (int i = 0; i < jsonArray.size(); i++) {
+                 // logger.info(String.format("Link #%d Number of author saved:%d/%d\n",doc.getLinkId(),jsonArray.size(),doc.getTotalPosts()));
+                   System.out.printf("%s - Link #%d Number of author saved :%d/%d\n",Thread.currentThread().getName() ,doc.getLinkId(),jsonArray.size(),doc.getTotalPosts());
+//                   Calendar cal = Calendar.getInstance();
+//                   System.out.println("Start: "+cal.getTime().toGMTString());
+                   for (int i = 0; i < jsonArray.size(); i++) {
+//                  Calendar cal = Calendar.getInstance();
+//                   System.out.println("Save link: "+cal.getTime().toGMTString());
+                    //System.out.print("Xong "+i);
                     SaveLink post = new SaveLink();
                     JSONObject obj = (JSONObject) jsonArray.get(i);
-
+                    if (obj.get("result")!=null){
+                        System.out.println("---------------------------------------Eror no thing response!");
+                        continue;
+                    }
                     if (obj.get("a") != null) {
                         AuthorDAO auDao = new AuthorDAO();
                         Author a = auDao.getObjectByName(obj.get("a").toString());
@@ -243,17 +250,13 @@ public class DeliciousHepler {
                         // System.out.println(date);
                         post.setDateSave(Timestamp.valueOf(date));
                     }
-                    int res = pdao.checkDuplicateItem(doc.getLinkId(), post.getAuthor().getAuthorId(), post.getDateSave());
+                    int res = pdao.checkDuplicateItem(doc.getLinkId(), post.getAuthor().getAuthorId());
                     if (res == -1) {
                         post.setSaveLinkId(SaveLinkDAO.nextIndex());
                     } else {
-                        if (res == -2) {
-                           // System.out.println("---------Trung vs older-----------");
+                           System.out.println("Da ton tai !!");
                             continue;
-                        } else {
-                            post.setSaveLinkId(res);
-                            System.out.println("---------Trung vs update -----------");
-                        }
+                        
                     }
                     post.setLink(doc);
                     try {
@@ -286,11 +289,18 @@ public class DeliciousHepler {
                 }
             } catch (ParseException | NumberFormatException | HibernateException ex) {
                 ex.printStackTrace();
-                logger.error("Error at link #"+doc.getLinkId());
+            //    logger.error("Error at link #"+doc.getLinkId());
                 System.out.println("--------------------Error ---------------");
             }
 
         }
+   }
+   public static void getAndSaveBookmarkHistoryByLink(Link doc) throws ParseException, MalformedURLException, IOException {
+        
+        String jsonDataString = "";
+        String bookmark = MD5Convertor.Convert2MD5(doc.getUrl());
+        jsonDataString = getResponeData(String.format("http://feeds.delicious.com/v2/json/url/%s?count=%d", bookmark, 1000));
+        getAndSaveBookmarkHistoryByLink(doc,jsonDataString);
       }
     
     //get and save follower
@@ -303,7 +313,7 @@ public class DeliciousHepler {
              try {
                 JSONArray jsonArray = (JSONArray) jsonParser.parse(jsonDataString);
                 
-                logger.info("Number of follower of Author #"+a.getAuthorId()+":" + jsonArray.size());
+              //  logger.info("Number of follower of Author #"+a.getAuthorId()+":" + jsonArray.size());
                 System.out.println("Number of follower of Author #"+a.getAuthorId()+":" + jsonArray.size());
                 for (int i = 0; i < jsonArray.size(); i++) {
 
