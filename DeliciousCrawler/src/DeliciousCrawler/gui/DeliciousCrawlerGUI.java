@@ -2,8 +2,14 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package DeliciousCrawler;
+package DeliciousCrawler.gui;
 
+import DeliciousCrawler.Console;
+import DeliciousCrawler.GetFollowerByAuthor;
+import DeliciousCrawler.GetLinkHistory;
+import DeliciousCrawler.GetLinkInfo;
+import DeliciousCrawler.LinkByTag;
+import DeliciousCrawler.RecentTag;
 import java.io.IOException;
 import javax.swing.JOptionPane;
 
@@ -42,6 +48,8 @@ public class DeliciousCrawlerGUI extends javax.swing.JFrame {
         jMenu1 = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
         jMenu3 = new javax.swing.JMenu();
+        menuShowData = new javax.swing.JMenuItem();
+        menuDatabaseStatus = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Delicious.com Crawler");
@@ -98,6 +106,23 @@ public class DeliciousCrawlerGUI extends javax.swing.JFrame {
         jMenuBar1.add(jMenu1);
 
         jMenu3.setText("Database");
+
+        menuShowData.setText("Show Data");
+        menuShowData.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuShowDataActionPerformed(evt);
+            }
+        });
+        jMenu3.add(menuShowData);
+
+        menuDatabaseStatus.setText("Database Status");
+        menuDatabaseStatus.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuDatabaseStatusActionPerformed(evt);
+            }
+        });
+        jMenu3.add(menuDatabaseStatus);
+
         jMenuBar1.add(jMenu3);
 
         setJMenuBar(jMenuBar1);
@@ -266,6 +291,16 @@ public class DeliciousCrawlerGUI extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnGetFollowerActionPerformed
 
+    private void menuDatabaseStatusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuDatabaseStatusActionPerformed
+        DatabaseStatus ds = new DatabaseStatus(this, true);
+        ds.setVisible(true);
+    }//GEN-LAST:event_menuDatabaseStatusActionPerformed
+
+    private void menuShowDataActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuShowDataActionPerformed
+       ShowData ds = new ShowData(this, true);
+        ds.setVisible(true);
+    }//GEN-LAST:event_menuShowDataActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -313,6 +348,8 @@ public class DeliciousCrawlerGUI extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSpinner jspNumberOfThread;
+    private javax.swing.JMenuItem menuDatabaseStatus;
+    private javax.swing.JMenuItem menuShowData;
     private javax.swing.JTextArea txtOutput;
     // End of variables declaration//GEN-END:variables
 }

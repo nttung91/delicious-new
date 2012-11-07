@@ -5,6 +5,7 @@
 package model.dao;
 
 import java.io.Serializable;
+import java.util.List;
 import model.pojo.Tag;
 import model.util.HibernateUtil;
 import org.hibernate.HibernateException;
@@ -27,7 +28,15 @@ public class TagDAO extends ObjectDAO<Tag, Integer> {
         session.close();
         return obj;
     }
+    public List<Tag> getListOrdered() throws HibernateException {
 
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        String hql = "select t from Tag t order by tagId";
+        Query query = session.createQuery(hql);
+        List<Tag> obj = query.list();
+        session.close();
+        return obj;
+    }
     public static int nextIndex(String s) {
         Session session = HibernateUtil.getSessionFactory().openSession();
         Tag t = getObjectByValue(s);
@@ -49,6 +58,6 @@ public class TagDAO extends ObjectDAO<Tag, Integer> {
 
     @Override
     protected Class getPOJOClass() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return Tag.class;
     }
 }

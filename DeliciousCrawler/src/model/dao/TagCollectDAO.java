@@ -5,9 +5,11 @@
 package model.dao;
 
 import java.sql.Timestamp;
+import java.util.List;
 import model.pojo.TagCollect;
 import model.util.HibernateUtil;
 import org.hibernate.Hibernate;
+import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.classic.Session;
 
@@ -48,6 +50,16 @@ public class TagCollectDAO extends ObjectDAO<TagCollect, Integer> {
         if (t != null ){
             return true;
         }
+        
         return false;
+    }
+     public List<Object[]> getListOrdered() throws HibernateException{
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        List<Object[]> list= null;
+        String hql = String.format("select t.tagName,count(t.id) from TagCollect t group by  t.tagName order by count(t.id) desc");
+        Query query = session.createQuery(hql);
+        list = query.list();
+        session.close();
+        return list;
     }
 }
