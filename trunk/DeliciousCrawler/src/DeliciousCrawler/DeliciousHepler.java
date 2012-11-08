@@ -219,12 +219,14 @@ public class DeliciousHepler {
                         
                         if (a!=null){
                             a.setIsFollowed(1);
+                           
                             post.setAuthor(a);
                         }
                         else {
                             Author au = new Author(AuthorDAO.nextIndex());
                             au.setAuthorName(obj.get("a").toString());
                             au.setIsFollowed(1);
+                            au.setIsGetFollowee(0);
                             post.setAuthor(au);
                         }
                         if (obj.get("a").toString().equals("")) {
@@ -304,12 +306,18 @@ public class DeliciousHepler {
     public static synchronized void getFollower(Author a) throws MalformedURLException, IOException{
          JSONParser jsonParser = new JSONParser();
         String jsonDataString = getResponeData(String.format("http://feeds.delicious.com/v2/json/networkmembers/%s?count=1000",a.getAuthorName()));
-        if (jsonDataString != null) {
+          AuthorDAO daoA = new AuthorDAO();
+                a.setIsGetFollowee(1);
+                System.out.println(a.getIsGetFollowee());
+                daoA.saveOrUpdateObject(a);
+        System.out.println("Da set");
+                if (jsonDataString != null) {
              try {
                 JSONArray jsonArray = (JSONArray) jsonParser.parse(jsonDataString);
                 
               //  logger.info("Number of follower of Author #"+a.getAuthorId()+":" + jsonArray.size());
                 System.out.println("Number of following of Author #"+a.getAuthorId()+":" + jsonArray.size());
+               
                 for (int i = 0; i < jsonArray.size(); i++) {
 
                     JSONObject obj = (JSONObject) jsonArray.get(i);
@@ -321,7 +329,7 @@ public class DeliciousHepler {
                         ts = Timestamp.valueOf(date);
                     }
                     if (obj.get("user") != null) {
-                        AuthorDAO daoA = new AuthorDAO();
+                       
                         FollowingDAO daoF = new FollowingDAO();
                         Following fo = new Following();
                          fo.setAuthorByFollower(a);
@@ -334,14 +342,20 @@ public class DeliciousHepler {
                               
                         }
                         else {
+                            System.out.println("-----------------Moi");
                             f = new Author(AuthorDAO.nextIndexForFollowee());
                             f.setAuthorName(obj.get("user").toString().trim());
                             f.setIsFollowed(0);
+                            f.setIsGetFollowee(1);
+                            daoA.saveOrUpdateObject(f);
+                            System.out.println("-----------------Moi "+f.getAuthorId());
                             FollowingId id = new FollowingId(a.getAuthorId(), f.getAuthorId());
                             fo.setId(id);
                             fo.setAuthorByFollower(f);
+                            
                         }
                          daoF.saveOrUpdateObject(fo);
+                         
                     }
                 }
                 

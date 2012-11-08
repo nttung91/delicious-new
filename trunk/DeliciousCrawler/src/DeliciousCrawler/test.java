@@ -6,6 +6,7 @@ package DeliciousCrawler;
 
 import lib.tools.Language;
 import lib.tools.RegexChecking;
+import model.dao.AuthorDAO;
 import model.pojo.Author;
 import sun.security.util.AuthResources;
 
@@ -15,7 +16,9 @@ import sun.security.util.AuthResources;
  */
 public class test {
       public static void main(String[] args) throws InterruptedException {
-      //System.out.println(Author.class.get);
+      AuthorDAO dao = new AuthorDAO();
+      int i = AuthorDAO.nextIndex();
+          System.out.println();
               
       Language lang = new Language();
       //lang.CheckSpecialCharacter();
