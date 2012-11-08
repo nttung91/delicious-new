@@ -25,7 +25,24 @@ public class AuthorDAO extends  ObjectDAO<Author, Integer> {
     }
      public static int nextIndex(){
          Session session = HibernateUtil.getSessionFactory().openSession();
-        String hql = "select max(obj.authorId) from Author obj";
+        String hql = "select max(obj.authorId) from Author obj where obj.isFollowed=1";
+        Query query = session.createQuery(hql);
+        Object kq = query.uniqueResult();
+        
+        if (kq!=null){
+        int maxItem = Integer.parseInt(kq.toString());
+        session.close();
+        return maxItem+1;
+        }
+        else {
+            session.close();
+            return 1;
+        }
+        
+     }
+     public static int nextIndexForFollowee(){
+         Session session = HibernateUtil.getSessionFactory().openSession();
+        String hql = "select max(obj.authorId) from Author obj where obj.isFollowed=0";
         Query query = session.createQuery(hql);
         Object kq = query.uniqueResult();
         

@@ -42,7 +42,7 @@ public class GetFollowerByAuthor extends Thread {
 
     public void getAndSaveFollowerInfo(List<Author> list) {
         AuthorDAO dao = new AuthorDAO();
-        int increment = 0;
+        int increment = 23;
         while (true) {
 
             int start = order * duration + increment * duration * totalThread;
@@ -50,10 +50,14 @@ public class GetFollowerByAuthor extends Thread {
             int i;
 
             for (i = start; i < end && i< list.size(); i++) {
+                //System.out.println(name +" - " +i);
                 try {
+                    if (!DatabaseHelper.isGetFollowee(list.get(i).getAuthorId())){
+                   //     System.out.println(name +" - getting -"+i);
                     DeliciousHepler.getFollower(list.get(i));
                     logger.info(String.format("Save follower of #%d:%s", list.get(i).getAuthorId(), list.get(i).getAuthorName()));
-                } catch (MalformedURLException ex) {
+                    }
+                    } catch (MalformedURLException ex) {
                     Logger.getLogger(LinkByTag.class.getName()).log(Level.SEVERE, null, ex);
                 } catch (IOException ex) {
                     Logger.getLogger(LinkByTag.class.getName()).log(Level.SEVERE, null, ex);

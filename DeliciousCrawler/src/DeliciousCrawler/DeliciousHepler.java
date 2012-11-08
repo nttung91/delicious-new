@@ -170,7 +170,7 @@ public class DeliciousHepler {
         return false;
     }
    
-      public static synchronized boolean getAndSaveBookmarkOnly(String bookmark) throws ParseException {
+     public static synchronized boolean getAndSaveBookmarkOnly(String bookmark) throws ParseException {
       
         int DocID = LinkDAO.nextIndex();
         Link doc = new Link();
@@ -204,12 +204,9 @@ public class DeliciousHepler {
                 SaveLinkDAO pdao = new SaveLinkDAO();
                  // logger.info(String.format("Link #%d Number of author saved:%d/%d\n",doc.getLinkId(),jsonArray.size(),doc.getTotalPosts()));
                    System.out.printf("%s - Link #%d Number of author saved :%d/%d\n",Thread.currentThread().getName() ,doc.getLinkId(),jsonArray.size(),doc.getTotalPosts());
-//                   Calendar cal = Calendar.getInstance();
-//                   System.out.println("Start: "+cal.getTime().toGMTString());
+              
                    for (int i = 0; i < jsonArray.size(); i++) {
-//                  Calendar cal = Calendar.getInstance();
-//                   System.out.println("Save link: "+cal.getTime().toGMTString());
-                    //System.out.print("Xong "+i);
+                 
                     SaveLink post = new SaveLink();
                     JSONObject obj = (JSONObject) jsonArray.get(i);
                     if (obj.get("result")!=null){
@@ -306,15 +303,13 @@ public class DeliciousHepler {
     //get and save follower
     public static synchronized void getFollower(Author a) throws MalformedURLException, IOException{
          JSONParser jsonParser = new JSONParser();
-
-        
         String jsonDataString = getResponeData(String.format("http://feeds.delicious.com/v2/json/networkmembers/%s?count=1000",a.getAuthorName()));
         if (jsonDataString != null) {
              try {
                 JSONArray jsonArray = (JSONArray) jsonParser.parse(jsonDataString);
                 
               //  logger.info("Number of follower of Author #"+a.getAuthorId()+":" + jsonArray.size());
-                System.out.println("Number of follower of Author #"+a.getAuthorId()+":" + jsonArray.size());
+                System.out.println("Number of following of Author #"+a.getAuthorId()+":" + jsonArray.size());
                 for (int i = 0; i < jsonArray.size(); i++) {
 
                     JSONObject obj = (JSONObject) jsonArray.get(i);
@@ -329,20 +324,20 @@ public class DeliciousHepler {
                         AuthorDAO daoA = new AuthorDAO();
                         FollowingDAO daoF = new FollowingDAO();
                         Following fo = new Following();
-                         fo.setAuthorByFollowee(a);
+                         fo.setAuthorByFollower(a);
                          fo.setDateFollow(ts);
                         Author f = daoA.getObjectByName(obj.get("user").toString().trim());
                         if (f!=null) {
-                               FollowingId id = new FollowingId(f.getAuthorId(), a.getAuthorId());
+                               FollowingId id = new FollowingId(a.getAuthorId(), f.getAuthorId());
                                fo.setId(id);
-                               fo.setAuthorByFollower(f);
+                               fo.setAuthorByFollowee(f);
                               
                         }
                         else {
-                            f = new Author(AuthorDAO.nextIndex());
+                            f = new Author(AuthorDAO.nextIndexForFollowee());
                             f.setAuthorName(obj.get("user").toString().trim());
                             f.setIsFollowed(0);
-                            FollowingId id = new FollowingId(f.getAuthorId(), a.getAuthorId());
+                            FollowingId id = new FollowingId(a.getAuthorId(), f.getAuthorId());
                             fo.setId(id);
                             fo.setAuthorByFollower(f);
                         }
