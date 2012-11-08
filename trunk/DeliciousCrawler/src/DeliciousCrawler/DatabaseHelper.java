@@ -5,6 +5,7 @@
 package DeliciousCrawler;
 
 import java.util.List;
+import model.pojo.Following;
 import model.pojo.Link;
 import model.util.HibernateUtil;
 import org.hibernate.Query;
@@ -51,7 +52,26 @@ public class DatabaseHelper {
 //                    return true;
 //                }
 //            }
-        if (count>0) return true;
-        else return false;
+        if (count>0) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+    static boolean isGetFollowee(int AuthorID) {
+        
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        String hql = "from Following f where f.authorByFollower.authorId = :id";
+        Query query  = session.createQuery(hql);
+        query.setParameter("id", AuthorID);
+        List<Following> f = query.list();
+        if (f!=null && f.size()>0) {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 }
