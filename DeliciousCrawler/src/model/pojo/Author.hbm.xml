@@ -14,6 +14,9 @@
         <property name="isFollowed" type="int">
             <column name="is_followed"/>
         </property>
+        <property name="isGetFollowee" type="int">
+            <column name="is_get_followee"/>
+        </property>
         <set name="saveLinks" inverse="true">
             <key>
                 <column name="author_id" />

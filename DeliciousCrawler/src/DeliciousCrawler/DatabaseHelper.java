@@ -5,6 +5,7 @@
 package DeliciousCrawler;
 
 import java.util.List;
+import model.pojo.Author;
 import model.pojo.Following;
 import model.pojo.Link;
 import model.util.HibernateUtil;
@@ -63,10 +64,10 @@ public class DatabaseHelper {
     static boolean isGetFollowee(int AuthorID) {
         
         Session session = HibernateUtil.getSessionFactory().openSession();
-        String hql = "from Following f where f.authorByFollower.authorId = :id";
+        String hql = "from Author a where a.authorId =:id and a.isGetFollowee = 1";
         Query query  = session.createQuery(hql);
         query.setParameter("id", AuthorID);
-        List<Following> f = query.list();
+        List<Author> f = query.list();
         if (f!=null && f.size()>0) {
             return true;
         }

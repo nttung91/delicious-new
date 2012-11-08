@@ -14,6 +14,16 @@ public class Author  implements java.io.Serializable {
      private int authorId;
      private String authorName;
      private int isFollowed;
+     private int isGetFollowee;
+
+    public int getIsGetFollowee() {
+        return isGetFollowee;
+    }
+
+    public void setIsGetFollowee(int isGetFollowee) {
+        this.isGetFollowee = isGetFollowee;
+    }
+     
 
     public int getIsFollowed() {
         return isFollowed;

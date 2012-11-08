@@ -42,7 +42,7 @@ public class GetFollowerByAuthor extends Thread {
 
     public void getAndSaveFollowerInfo(List<Author> list) {
         AuthorDAO dao = new AuthorDAO();
-        int increment = 23;
+        int increment = 0;
         while (true) {
 
             int start = order * duration + increment * duration * totalThread;
