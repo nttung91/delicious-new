@@ -2,9 +2,11 @@ package DeliciousCrawler;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.util.ArrayList;
+import java.sql.Time;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import model.dao.*;
@@ -51,14 +53,18 @@ public class GetLinkHistory extends Thread {
             int i;
             for (i = start; i < end && i<list.size(); i++) {
                
+                System.out.println(name + " Link #"+list.get(i).getLinkId());
                 if (DatabaseHelper.isCrawled(list.get(i))) 
                 {
                     continue;
                 }
                 try {
-                 
-                    DeliciousHepler.getAndSaveBookmarkHistoryByLink(list.get(i));
                   
+                  Date t = Calendar.getInstance().getTime();
+                    DeliciousHepler.getAndSaveBookmarkHistoryByLink(list.get(i));
+                   Date t2 = Calendar.getInstance().getTime();
+                   double d = (long)((t2.getTime() - t.getTime())/1000.0);
+                  System.out.printf("%s Link #%d : total time to get : %f second\n",Thread.currentThread().getName(),list.get(i).getLinkId(),d);
                 } catch (ParseException ex) {
                     Logger.getLogger(GetLinkHistory.class.getName()).log(Level.SEVERE, null, ex);
                 } catch (MalformedURLException ex) {
@@ -73,6 +79,7 @@ public class GetLinkHistory extends Thread {
             increment++;
         }
     }
+   
  public static void main(String[] args) throws InterruptedException {
 
         // getLinkHistory();
@@ -91,29 +98,28 @@ public class GetLinkHistory extends Thread {
         for (int i = 0; i < threads.length; i++) {
             if (threads[i] == null) {
                 threads[i] = new GetLinkHistory(rootGroup,i,100,threads.length);
-
             }
         }
         int[] restartCount = new int[threads.length];
         boolean stopAll = false;
         int maxRetry = 10000;
-        while (true) {
-            Thread.sleep(60000);
-            for (int i = 0; i < threads.length; i++) {
-                if (restartCount[i] > maxRetry) {
-                    stopAll = true;
-                }
-                if (stopAll) {
-                    return;
-                }
-                if (!threads[i].isAlive()) {
-                    Thread.sleep(3000);
-                    threads[i] = new GetLinkHistory(rootGroup,i,100,threads.length);
-                    System.out.println("#" + threads[i].getName() + "Start again");
-                    restartCount[i]++;
-                }
-            }
-
-        }
+//        while (true) {
+//            Thread.sleep(60000);
+//            for (int i = 0; i < threads.length; i++) {
+//                if (restartCount[i] > maxRetry) {
+//                    stopAll = true;
+//                }
+//                if (stopAll) {
+//                    return;
+//                }
+//                if (!threads[i].isAlive()) {
+//                    Thread.sleep(3000);
+//                    threads[i] = new GetLinkHistory(rootGroup,i,100,threads.length);
+//                    System.out.println("#" + threads[i].getName() + "Start again");
+//                    restartCount[i]++;
+//                }
+//            }
+//
+//        }
     }
 }

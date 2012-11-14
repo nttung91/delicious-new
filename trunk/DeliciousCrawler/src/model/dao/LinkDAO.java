@@ -60,6 +60,7 @@ public class LinkDAO extends ObjectDAO<Link, Integer> {
         List<Link> list= null;
         String hql = String.format("select obj from Link obj order by obj.linkId");
         Query query = session.createQuery(hql);
+        query.setMaxResults(100000);
         list = query.list();
         session.close();
         return list;

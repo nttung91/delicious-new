@@ -70,7 +70,6 @@ public class Language {
             } else {
                 count1++;
             }
-
         }
         System.out.printf("English %d  => Not English: %d", count, count1);
     }
