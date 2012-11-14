@@ -35,13 +35,14 @@ public class DatabaseHelper {
         Session session = HibernateUtil.getSessionFactory().openSession();
         String hql = "select count(s.author.authorId) from SaveLink s where s.link.linkId = :linkid";
         Query query = session.createQuery(hql);
+        query.setMaxResults(1);
         query.setParameter("linkid", li.getLinkId());
         Object obj = query.uniqueResult();
         int count = Integer.parseInt(obj.toString());
-//        int total = (li.getTotalPosts()>=1000)?1000:li.getTotalPosts();
-//        
+        int total = (li.getTotalPosts()>=1000)?1000:li.getTotalPosts();
+        
 //            if (count >= 100) {
-//                if ((count * 1.0 / total) > 0.7) {
+//                if ((count * 1.0 / total) > 0.3) {
 //                    return true;
 //                } else {
 //                    return false;

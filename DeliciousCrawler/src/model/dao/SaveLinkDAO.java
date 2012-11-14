@@ -21,12 +21,13 @@ public class SaveLinkDAO extends ObjectDAO<SaveLink, Integer> {
 
     public int checkDuplicateItem(int linkID, int authorId) {
         Session session = HibernateUtil.getSessionFactory().openSession();
-        String hql = "from SaveLink p where p.author.authorId=:userid and p.link.linkId=:linkId";
+        String hql = "select count(*) from SaveLink p where p.author.authorId=:userid and p.link.linkId=:linkId";
         Query query = session.createQuery(hql);
+        query.setMaxResults(1);
         query.setParameter("userid",authorId);
         query.setParameter("linkId", linkID);
-        SaveLink sl = (SaveLink)query.uniqueResult();
-        if (sl != null){
+        long sl = (long)query.uniqueResult();
+        if (sl >0){
             return 0;
 
         } else {
