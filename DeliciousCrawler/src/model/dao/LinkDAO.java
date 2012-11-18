@@ -55,12 +55,12 @@ public class LinkDAO extends ObjectDAO<Link, Integer> {
          
      }
       
-      public List<Link> getListOrdered() throws HibernateException{
+      public List<Link> getListOrdered() throws HibernateException {
         Session session = HibernateUtil.getSessionFactory().openSession();
         List<Link> list= null;
         String hql = String.format("select obj from Link obj order by obj.linkId");
         Query query = session.createQuery(hql);
-        query.setMaxResults(100000);
+        query.setFirstResult(230000);
         list = query.list();
         session.close();
         return list;

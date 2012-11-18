@@ -234,9 +234,9 @@ public class DeliciousHepler {
         } else {
             return null;
         }
-        if (obj.get("d") != null) {
-            post.setTitle(obj.get("d").toString());
-        }
+//        if (obj.get("d") != null) {
+//            post.setTitle(obj.get("d").toString());
+//        }
 //
 //        if (obj.get("n") != null) {
 //            post.setDescription(obj.get("n").toString());
@@ -253,7 +253,6 @@ public class DeliciousHepler {
         } else {
             System.out.println("Da ton tai !!");
             return null;
-
         }
         post.setLink(doc);
         try {
@@ -297,10 +296,10 @@ public class DeliciousHepler {
 
         String jsonDataString = "";
         String bookmark = MD5Convertor.Convert2MD5(doc.getUrl());
-        System.out.println("Downloading data......");
+      //  System.out.println("Downloading data......");
         //System.out.println(Calendar.getInstance().getTime().toString());
         jsonDataString = getResponeData(String.format("http://feeds.delicious.com/v2/json/url/%s?count=%d", bookmark, 1000));
-        System.out.println("Complete......");
+        //System.out.println("Complete......");
 
         //System.out.println(Calendar.getInstance().getTime().toString());
         //  getAndSaveBookmarkHistoryByLink(doc,jsonDataString);
