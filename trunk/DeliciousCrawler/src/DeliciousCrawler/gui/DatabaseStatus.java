@@ -84,13 +84,13 @@ public class DatabaseStatus extends javax.swing.JDialog {
         lblSaveLink.setText("Number Of Tags");
         getContentPane().add(lblSaveLink, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 110, -1, -1));
 
-        jLabel8.setText("Number Of Tags");
+        jLabel8.setText("Number Of Saves Link");
         getContentPane().add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 110, -1, -1));
 
         lblTagLink.setText("Number Of Tags");
         getContentPane().add(lblTagLink, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 140, -1, -1));
 
-        jLabel9.setText("Number Of Tags");
+        jLabel9.setText("Number Of Tags Link");
         getContentPane().add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 140, -1, -1));
 
         pack();
@@ -104,9 +104,9 @@ public class DatabaseStatus extends javax.swing.JDialog {
         TagLinkDAO tl = new TagLinkDAO();
         lblLinks.setText(link.count() + " Link");
         lblTags.setText(tag.count() + " Tag");
-        lblUsers.setText(au.count() + "User");
+        lblUsers.setText(au.count() + " User");
         lblSaveLink.setText(sl.count()+ " Save Link");
-        lblTagLink.setText(tl.count() + "Tags Link");
+        lblTagLink.setText(tl.count() + " Tags Link");
     }//GEN-LAST:event_formWindowOpened
 
     private void btnExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExitActionPerformed
