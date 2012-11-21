@@ -34,9 +34,5 @@ public class HtmlContent {
         }
         in.close();
         return res;
-
-
-
-
     }
 }

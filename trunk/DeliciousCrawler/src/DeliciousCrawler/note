@@ -1,0 +1,2 @@
+lấy tags set của một link
+select t.tag.tagName,count(t.tag.tagName) from TagLink t where t.saveLink.link.linkId = 10022 group by t.tag.tagName order by count(t.tag.tagName) desc
