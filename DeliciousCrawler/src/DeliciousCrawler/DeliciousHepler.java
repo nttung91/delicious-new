@@ -338,18 +338,20 @@ public class DeliciousHepler {
     //get and save follower
     public static synchronized void getFollower(Author a) throws MalformedURLException, IOException {
         JSONParser jsonParser = new JSONParser();
+        System.out.println("Downloading");
         String jsonDataString = getResponeData(String.format("http://feeds.delicious.com/v2/json/networkmembers/%s?count=1000", a.getAuthorName()));
+        System.out.println("Completed");
         AuthorDAO daoA = new AuthorDAO();
         a.setIsGetFollowee(1);
-        System.out.println(a.getIsGetFollowee());
+        //System.out.println(a.getIsGetFollowee());
         daoA.saveOrUpdateObject(a);
-        System.out.println("Da set");
+       // System.out.println("Da set");
         if (jsonDataString != null) {
             try {
                 JSONArray jsonArray = (JSONArray) jsonParser.parse(jsonDataString);
 
                 //  logger.info("Number of follower of Author #"+a.getAuthorId()+":" + jsonArray.size());
-                System.out.println("Number of following of Author #" + a.getAuthorId() + ":" + jsonArray.size());
+                System.out.println(Thread.currentThread().getName() +" Number of following of Author #" + a.getAuthorId() + ":" + jsonArray.size());
 
                 for (int i = 0; i < jsonArray.size(); i++) {
 

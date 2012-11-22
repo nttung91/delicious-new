@@ -15,7 +15,7 @@ import model.pojo.*;
 public class GetFollowerByAuthor extends Thread {
 
     String name;
-    org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(DeliciousCom.class);
+    //org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(DeliciousCom.class);
     int order, duration, totalThread;
     AuthorDAO dao = new AuthorDAO();
     List<Author> l;
@@ -29,7 +29,7 @@ public class GetFollowerByAuthor extends Thread {
         order = threadOrder;
         this.duration = duration;
         this.totalThread = totalThread;
-        logger.info(String.format("%s started.\n", name));
+     //   logger.info(String.format("%s started.\n", name));
         System.out.printf("%s started.\n", name);
         start();
     }
@@ -55,7 +55,7 @@ public class GetFollowerByAuthor extends Thread {
                     if (!DatabaseHelper.isGetFollowee(list.get(i).getAuthorId())){
                    //     System.out.println(name +" - getting -"+i);
                     DeliciousHepler.getFollower(list.get(i));
-                    logger.info(String.format("Save follower of #%d:%s", list.get(i).getAuthorId(), list.get(i).getAuthorName()));
+                    //logger.info(String.format("Save follower of #%d:%s", list.get(i).getAuthorId(), list.get(i).getAuthorName()));
                     }
                     } catch (MalformedURLException ex) {
                     Logger.getLogger(LinkByTag.class.getName()).log(Level.SEVERE, null, ex);
@@ -82,37 +82,38 @@ public class GetFollowerByAuthor extends Thread {
             rootGroup = parentGroup;
         }
         int duration = 1000;
-        GetFollowerByAuthor[] threads = new GetFollowerByAuthor[3];
+        GetFollowerByAuthor[] threads = new GetFollowerByAuthor[1];
         for (int i = 0; i < threads.length; i++) {
             if (threads[i] == null) {
 
                 threads[i] = new GetFollowerByAuthor(rootGroup, i, duration, threads.length);
-                
+                System.out.println("Start"+i);
             }
+             System.out.println(i);
         }
         int[] restartCount = new int[threads.length];
         boolean stopAll = false;
         int maxRetry = 10000;
 
-        while (true) {
-            Thread.sleep(60000);
-            for (int i = 0; i < threads.length; i++) {
-                if (restartCount[i] > maxRetry) {
-                    stopAll = true;
-                }
-                if (stopAll) {
-                    return;
-                }
-                if (!threads[i].isAlive()) {
-
-
-                    threads[i] = new GetFollowerByAuthor(rootGroup, i, duration, threads.length);
-                    System.out.println("#" + threads[i].getName() + "Start again");
-
-
-                }
-            }
-
-        }
+//        while (true) {
+//            Thread.sleep(60000);
+//            for (int i = 0; i < threads.length; i++) {
+//                if (restartCount[i] > maxRetry) {
+//                    stopAll = true;
+//                }
+//                if (stopAll) {
+//                    return;
+//                }
+//                if (!threads[i].isAlive()) {
+//
+//
+//                    threads[i] = new GetFollowerByAuthor(rootGroup, i, duration, threads.length);
+//                    System.out.println("#" + threads[i].getName() + "Start again");
+//
+//
+//                }
+//            }
+//
+//        }
     }
 }
