@@ -54,6 +54,7 @@ public class GetLinkHistory extends Thread {
             for (i = start; i < end && i<list.size(); i++) {
                
                 System.out.println(name + " Link #"+list.get(i).getLinkId());
+                if (list.get(i).getHash()==null) continue;
                 if (DatabaseHelper.isCrawled(list.get(i))) 
                 {
                     continue;
