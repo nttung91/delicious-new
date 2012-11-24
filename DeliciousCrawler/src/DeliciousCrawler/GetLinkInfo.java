@@ -53,12 +53,13 @@ public class GetLinkInfo extends Thread {
 
                 try {
 
-                    if (l.get(i).getHash() != null) {
+                    if (l.get(i).getHash() != null && !l.get(i).equals("")) {
                         continue;
                     }
-                    DeliciousHepler.getAndSaveBookmarkInfo(l.get(i));
-                    System.out.println(name + " Get info at link #" + i);
-                    logger.info(name + " Get info for at link #" + i);
+                    if (DeliciousHepler.getAndSaveBookmarkInfo(l.get(i)))
+                    System.out.println(name + " Get info at link #" + l.get(i).getLinkId());
+                    else System.out.println("Nothing");
+                  //  logger.info(name + " Get info for at link #" + i);
                 } catch (ParseException ex) {
 
                     Logger.getLogger(GetLinkInfo.class.getName()).log(Level.SEVERE, null, ex);
@@ -111,7 +112,7 @@ public class GetLinkInfo extends Thread {
             rootGroup = parentGroup;
         }
         int duration = 1000;
-        GetLinkInfo[] threads = new GetLinkInfo[1];
+        GetLinkInfo[] threads = new GetLinkInfo[2];
         for (int i = 0; i < threads.length; i++) {
             if (threads[i] == null) {
 
@@ -122,25 +123,25 @@ public class GetLinkInfo extends Thread {
         boolean stopAll = false;
         int maxRetry = 10000;
         
-        while (true) {
-            Thread.sleep(60000);
-            for (int i = 0; i < threads.length; i++) {
-                if (restartCount[i] > maxRetry) {
-                    stopAll = true;
-                }
-                if (stopAll) {
-                    return;
-                }
-                if (!threads[i].isAlive()) {
-                    
-                       
-                        threads[i] = new GetLinkInfo( rootGroup,i,duration,threads.length);
-                        System.out.println("#" + threads[i].getName() + "Start again");
-                        
-                  
-                }
-            }
-
-        }
+//        while (true) {
+//            Thread.sleep(60000);
+//            for (int i = 0; i < threads.length; i++) {
+//                if (restartCount[i] > maxRetry) {
+//                    stopAll = true;
+//                }
+//                if (stopAll) {
+//                    return;
+//                }
+//                if (!threads[i].isAlive()) {
+//                    
+//                       
+//                        threads[i] = new GetLinkInfo( rootGroup,i,duration,threads.length);
+//                        System.out.println("#" + threads[i].getName() + "Start again");
+//                        
+//                  
+//                }
+//            }
+//
+//        }
     }
 }
