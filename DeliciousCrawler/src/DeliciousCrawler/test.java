@@ -4,15 +4,10 @@
  */
 package DeliciousCrawler;
 
-import com.delicious.clustering.SimpleClustering;
 import com.delicious.clustering.HelperLib;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Iterator;
+import com.delicious.clustering.SimpleClustering;
 import java.util.List;
 import java.util.Random;
-import java.util.Set;
 import model.dao.AuthorDAO;
 import model.dao.LinkDAO;
 import model.dao.TagDAO;
@@ -32,7 +27,7 @@ public class test {
           TagDAO tdao = new TagDAO();
           Random ran = new Random();
           int id = Math.abs(ran.nextInt()%400000);
-          List<Link> l = dao.getListLinks();
+          List<Link> l = dao.getListLinks(200);
           
 //          long start = Calendar.getInstance().getTimeInMillis();
 //          System.out.println(dao.getDistanceBetweenLinks(l.get(0),l.get(99)));
@@ -44,7 +39,7 @@ public class test {
 //              System.out.println(it.next());
 //          }
           System.out.println(l.size());
-          SimpleClustering sc = new SimpleClustering();
+          SimpleClustering sc = new SimpleClustering(0.7);
           sc.run(l);
           
 //            ArrayList<String> str = dao.getTagSetByLinks(l.get(0), l.get(1));
