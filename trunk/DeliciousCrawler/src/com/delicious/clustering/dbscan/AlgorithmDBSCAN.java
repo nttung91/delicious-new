@@ -6,6 +6,7 @@ package com.delicious.clustering.dbscan;
 
 import com.delicious.clustering.dbscan.HelpLibDBSCAN;
 import java.util.ArrayList;
+import java.util.Random;
 
 /**
  *
@@ -20,10 +21,31 @@ public class AlgorithmDBSCAN {
     double[][] arrDistance;
 
     public void DBSCAN(ArrayList<DBPoint> SetOfPoints, double Eps, int MinPts) {
+        //mix array
+       int[] a = new int[SetOfPoints.size()];
+         Random ran = new Random();
+        for (int i =0;i<a.length;i++)
+        {
+            a[i] = i;
+        }
+        for (int i=0;i<SetOfPoints.size();i++){
+            int ran1 = ran.nextInt(SetOfPoints.size());
+            int ran2 = ran.nextInt(SetOfPoints.size());
+            int temp = a[ran1];
+            a[ran1] = a[ran2];
+            a[ran2] =temp;
+        }
+        
         //SetOfPoints set all to UNCLASSIFI
+        for (int i=0;i<SetOfPoints.size();i++){
+            SetOfPoints.get(i).setClusterID(dao.UNCLASSIFIED);
+        }
+        //
         int ClusterID = 0;
+           System.out.println();
         for (int i = 0; i < SetOfPoints.size(); i++) {
-            DBPoint Point = SetOfPoints.get(i);
+            DBPoint Point = SetOfPoints.get(a[i]);
+          //  System.out.print(a[i]+" ");
             if (Point.getClusterID() == dao.UNCLASSIFIED) {
                 if (ExpandCluster(SetOfPoints, Point, ClusterID, Eps, MinPts)) {
                     ClusterID++;
