@@ -37,8 +37,8 @@ public class SimpleClustering {
                 //duyet cac cluster
                 System.out.println("Cluster size "+result.size());
                 for (int j = 0; j < result.size(); j++) {
-                    double dist = dao.getDistanceBetweenLinkAndCluster(list.get(i), result.get(j));
-                    arrDistance.add(dist);
+                   // double dist = dao.getDistanceBetweenLinkAndCluster(list.get(i), result.get(j));
+                  //  arrDistance.add(dist);
                 }
                 //chọn cum có khoảng cách gần nhất
                 int c = 0;
@@ -95,8 +95,8 @@ public class SimpleClustering {
                 //duyet cac cluster
                 System.out.println("Cluster size "+result.size());
                 for (int j = 0; j < result.size(); j++) {
-                    double dist = dao.getDistanceBetweenLinkAndCluster(list.get(i), result.get(j));
-                    arrDistance.add(dist);
+                    //double dist = dao.getDistanceBetweenLinkAndCluster(list.get(i), result.get(j));
+                    //arrDistance.add(dist);
                 }
                 //chọn cum có khoảng cách gần nhất
                 int c = 0;

@@ -30,7 +30,7 @@ public class HelperLib {
         session.close();
         return list;
     }
-
+    //lấy tags và số lượng lần tag được sử dụng trên link
     public List<Object[]> getDistinctTags(Link l) {
         Session session = HibernateUtil.getSessionFactory().openSession();
         String hql = "select t.tag.tagName,count(t.tag.tagName) from TagLink t where t.saveLink.link.linkId = :linkid group by t.tag.tagName order by count(t.tag.tagName) desc";
@@ -39,6 +39,15 @@ public class HelperLib {
         List<Object[]> list = query.list();
         session.close();
         return list;
+    }
+
+    public ArrayList<List<Object[]>> getListLinkData(List<Link> l) {
+        ArrayList<List<Object[]>> LinkData = new ArrayList<>();
+        for (int i = 0; i < l.size(); i++) {
+            System.out.printf("Getting Tag set for link %d\n", i);
+            LinkData.add(getDistinctTags(l.get(i)));
+        }
+        return LinkData;
     }
 
     public double getAffinityBetweenUserAndTag(String a, String t) {
@@ -79,25 +88,27 @@ public class HelperLib {
 
     }
 
-    public ArrayList<String> getTagSetByLinks(Link l1, Link l2) {
-
-        Session session = HibernateUtil.getSessionFactory().openSession();
-        String hql = "select t.tag.tagName from TagLink t where t.saveLink.link.linkId = :linkid1 or t.saveLink.link.linkId = :linkid2  group by t.tag.tagName order by count(t.tag.tagName) desc";
-        Query query = session.createQuery(hql);
-        query.setParameter("linkid1", l1.getLinkId());
-        query.setParameter("linkid2", l2.getLinkId());
-        List<String> list = query.list();
+    public ArrayList<String> getTagSetByLinks(ArrayList<List<Object[]>> LinkData, int l1, int l2) {
         ArrayList<String> arr = new ArrayList<>();
-        arr.addAll(list);
-        session.close();
+        for (int i = 0; i < LinkData.get(l1).size(); i++) {
+            List<Object[]> list = LinkData.get(l1);
+            arr.add(list.get(i)[0].toString());
+        }
+        for (int i = 0; i < LinkData.get(l2).size(); i++) {
+            List<Object[]> list = LinkData.get(l2);
+
+            if (!arr.contains(list.get(i)[0].toString())) {
+                arr.add(list.get(i)[0].toString());
+            }
+        }
         return arr;
     }
 
     public double[] convertToVector(ArrayList<String> listAll, List<Object[]> list) {
         double[] arr = new double[listAll.size()];
         for (int i = 0; i < listAll.size(); i++) {
-            for (int j=0;j<list.size();j++){
-                if (list.get(j)[0].equals(listAll.get(i))){
+            for (int j = 0; j < list.size(); j++) {
+                if (list.get(j)[0].equals(listAll.get(i))) {
                     arr[i] = Integer.parseInt(list.get(j)[1].toString());
                     break;
                 }
@@ -124,25 +135,26 @@ public class HelperLib {
         return (1 - kq);
     }
 
-    public double getDistanceBetweenLinks(Link l1, Link l2) {
-        ArrayList<String> set = getTagSetByLinks(l1, l2);
-        double[] a = convertToVector(set, getDistinctTags(l1));
-        double[] b = convertToVector(set, getDistinctTags(l2));
+    public double getDistanceBetweenLinks(ArrayList<List<Object[]>> LinkData, int l1, int l2) {
+        ArrayList<String> set = getTagSetByLinks(LinkData, l1, l2);
+        double[] a = convertToVector(set, LinkData.get(l1));
+        double[] b = convertToVector(set, LinkData.get(l2));
 
         return calculateCosi(a, b);
     }
 
-    public double getDistanceBetweenLinkAndCluster(Link l1, ArrayList<Link> cluster) {
+    public double getDistanceBetweenLinkAndCluster(ArrayList<List<Object[]>> LinkData, Link l1, ArrayList<Link> cluster) {
         double avg = 0;
-        if (cluster.isEmpty()) {
-            return 0;
-        }
-        for (int i = 0; i < cluster.size(); i++) {
-            avg += getDistanceBetweenLinks(l1, cluster.get(i));
-        }
+//        if (cluster.isEmpty()) {
+//            return 0;
+//        }
+//        for (int i = 0; i < cluster.size(); i++) {
+//            avg += getDistanceBetweenLinks(LinkData,l1,cluster.get(i));
+//        }
         return avg / cluster.size();
     }
-    public double[] getRepresentativeVectorByCluster(ArrayList<Link> cluster,int numberOfDim){
+
+    public double[] getRepresentativeVectorByCluster(ArrayList<Link> cluster, int numberOfDim) {
         double[] d = new double[numberOfDim];
         for (int i = 0; i < cluster.size(); i++) {
             //int[] a = 

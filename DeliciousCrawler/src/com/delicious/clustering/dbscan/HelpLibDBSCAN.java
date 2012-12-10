@@ -16,14 +16,14 @@ public class HelpLibDBSCAN {
     public final int UNCLASSIFIED = -1;
     public final int NOISE = -2;
     HelperLib dao = new HelperLib();
-    public double[][] getSimilarityDistanceBetweenLinks(List<Link> list) {
-        double[][] kq = new double[list.size()][list.size()];
-        for (int i = 0; i < list.size(); i++) {
+    public double[][] getSimilarityDistanceBetweenLinks(ArrayList<List<Object[]>> LinkData) {
+        double[][] kq = new double[LinkData.size()][LinkData.size()];
+        for (int i = 0; i < LinkData.size(); i++) {
             System.out.println(i+"...");
             for (int j = 0;j<=i;j++){
                 if (i==j) kq[i][j]=0;
                 else {
-                    kq[i][j] = dao.getDistanceBetweenLinks(list.get(i), list.get(j));
+                    kq[i][j] = dao.getDistanceBetweenLinks(LinkData,i,j);
                 }
             }
         }
