@@ -30,17 +30,26 @@ public class HelperLib {
         session.close();
         return list;
     }
-    //lấy tags và số lượng lần tag được sử dụng trên link
+    //lấy tags và % số lượng lần tag được sử dụng trên link
     public List<Object[]> getDistinctTags(Link l) {
         Session session = HibernateUtil.getSessionFactory().openSession();
+        String hql1 = "select count(*) from SaveLink sl where sl.link.linkId = :linkid1";
+         Query query = session.createQuery(hql1);
+         query.setParameter("linkid1", l.getLinkId());
+         long count = (long)query.uniqueResult();
+         
+         
         String hql = "select t.tag.tagName,count(t.tag.tagName) from TagLink t where t.saveLink.link.linkId = :linkid group by t.tag.tagName order by count(t.tag.tagName) desc";
-        Query query = session.createQuery(hql);
+        query = session.createQuery(hql);
         query.setParameter("linkid", l.getLinkId());
         List<Object[]> list = query.list();
+        for (int i=0;i<list.size();i++){
+            list.get(i)[1] = Integer.parseInt(list.get(i)[1].toString())*1.0/1; 
+        }
         session.close();
         return list;
     }
-
+    //lấy dữ liệu cho các link
     public ArrayList<List<Object[]>> getListLinkData(List<Link> l) {
         ArrayList<List<Object[]>> LinkData = new ArrayList<>();
         for (int i = 0; i < l.size(); i++) {
@@ -49,7 +58,7 @@ public class HelperLib {
         }
         return LinkData;
     }
-
+    
     public double getAffinityBetweenUserAndTag(String a, String t) {
         Session session = HibernateUtil.getSessionFactory().openSession();
         String hql = "select count(*) from TagLink tl where tl.tag.tagName=:tName and tl.saveLink.author.authorName = :aName";
@@ -75,19 +84,18 @@ public class HelperLib {
         return d;
 
     }
-
+    
     public List<Link> getListLinks(int limit) {
         Session session = HibernateUtil.getSessionFactory().openSession();
-        String hql = "from Link l where l.totalPosts>:limit";
+        String hql = "from Link l where l.totalPosts>:limit order by l.linkId";
         Query query = session.createQuery(hql);
         query.setParameter("limit", 100);
+     //   query.setFirstResult(100);
         query.setMaxResults(limit);
         List<Link> l = query.list();
         session.close();
         return l;
-
     }
-
     public ArrayList<String> getTagSetByLinks(ArrayList<List<Object[]>> LinkData, int l1, int l2) {
         ArrayList<String> arr = new ArrayList<>();
         for (int i = 0; i < LinkData.get(l1).size(); i++) {
@@ -96,20 +104,19 @@ public class HelperLib {
         }
         for (int i = 0; i < LinkData.get(l2).size(); i++) {
             List<Object[]> list = LinkData.get(l2);
-
             if (!arr.contains(list.get(i)[0].toString())) {
                 arr.add(list.get(i)[0].toString());
             }
         }
         return arr;
     }
-
+    //chu
     public double[] convertToVector(ArrayList<String> listAll, List<Object[]> list) {
         double[] arr = new double[listAll.size()];
         for (int i = 0; i < listAll.size(); i++) {
             for (int j = 0; j < list.size(); j++) {
                 if (list.get(j)[0].equals(listAll.get(i))) {
-                    arr[i] = Integer.parseInt(list.get(j)[1].toString());
+                    arr[i] = Double.parseDouble(list.get(j)[1].toString());
                     break;
                 }
             }
