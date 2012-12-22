@@ -5,6 +5,8 @@
 package com.delicious.clustering.dbscan;
 
 import com.delicious.clustering.HelperLib;
+import com.delicious.clustering.evaluate.DataCollect;
+import com.delicious.clustering.evaluate.ReadWriteExcelFile;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -46,50 +48,75 @@ public class run {
         return kq;
     }
 
-    public static void main(String[] args) throws FileNotFoundException, IOException {
+    static void writeToFile(double[][] kq) throws FileNotFoundException, IOException {
+        String fout = "D:/distance" + Calendar.getInstance().getTime().getTime() + "-" + kq[0].length + ".txt";
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fout)));
+        for (int i = 0; i < kq[0].length; i++) {
+            for (int j = 0; j <= i; j++) {
+                System.out.printf("%f ", kq[i][j]);
+                bw.write(kq[i][j] + " ");
+            }
+            bw.write("\n");
+            bw.flush();
+            System.out.println();
+        }
+    }
+
+    static void distribute(ArrayList<DBPoint> SetOfPoints, double[][] kq) {
+        AlgorithmDBSCAN dbscan = new AlgorithmDBSCAN(kq);
+        for (int d = -1; d < 14; d++) {
+            System.out.printf("%5.2f", 0.2 + 0.05 * d);
+        }
+        System.out.println();
+        for (int k = 2; k < 10; k++) {
+            System.out.printf("%5d", k);
+            for (int d = 0; d < 14; d++) {
+                dbscan.DBSCAN(SetOfPoints, 0.2 + 0.05 * d, k, 0);
+                int max = -1;
+                for (int i = 0; i < SetOfPoints.size(); i++) {
+                    DBPoint p = SetOfPoints.get(i);
+                    if (p.getClusterID() > max) {
+                        max = p.getClusterID();
+                    }
+                }
+                System.out.printf("%5d", max + 1);
+
+            }
+            System.out.println();
+        }
+    }
+
+    public static void main(String[] args) throws FileNotFoundException, IOException, Exception {
         HelpLibDBSCAN dbdao = new HelpLibDBSCAN();
         HelperLib dao = new HelperLib();
         long start = Calendar.getInstance().getTimeInMillis();
         List<Link> l = dao.getListLinks(1000);
         long end = Calendar.getInstance().getTimeInMillis();
         System.out.println("Time to get link " + (end - start));
-        double[][] kq = readFromFile("D:/distance1354571484353.txt", l.size());
+        //double[][] kq = readFromFile("D:/Data/700.txt", l.size());
+        double[][] kq = calculateFromData(l);
         start = Calendar.getInstance().getTimeInMillis();
         System.out.println("Time to calculate distance " + (start - end));
-        String fout = "D:/distance" + Calendar.getInstance().getTime().getTime() + "-" + l.size() + ".txt";
-        DBSCANParameter param = new DBSCANParameter(kq);
-//        for (int i=2;i<50;i++)
-//        {
-        double Eps = param.getEpsByErrorPercent(0.4, 4);
-//        System.out.printf("K= %d -> Eps = %f\n",i,Eps);
-//        }
+        writeToFile(kq);
+        HelpLibDBSCAN param = new HelpLibDBSCAN();
+       // ArrayList<DBPoint> SetOfPoints = dbdao.convertData(l);
 
-//        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fout)));
-//        for (int i = 0; i < kq[0].length; i++) {
-//            for (int j = 0; j <= i; j++) {
-//                System.out.printf("%f ", kq[i][j]);
-//               bw.write(kq[i][j]+" ");
-//
-//            }
-//            bw.write("\n");
-//            bw.flush();
-//            System.out.println();
-//        }
-        ArrayList<DBPoint> SetOfPoints = dbdao.convertData(l);
+        //distribute(SetOfPoints, kq);
+        return;
+
         end = Calendar.getInstance().getTimeInMillis();
         System.out.println("Time to Convert data link " + (end - start));
-//        ArrayList<DBPoint> region = dbdao.getRegionQuery(SetOfPoints, kq, SetOfPoints.get(3), 0.8);
-//        for (int i = 0; i < region.size(); i++) {
-//            if (SetOfPoints.get(3).getId() > region.get(i).getId()) {
-//                System.out.printf("%d - %f "ssssssssssssssssssssssx, region.get(i).getId(), kq[SetOfPoints.get(3).getId()][region.get(i).getId()]);
-//            } else {
-//                System.out.printf("%d - %f ", region.get(i).getId(), kq[region.get(i).getId()][SetOfPoints.get(3).getId()]);
-//            }
-//        }
-
         AlgorithmDBSCAN dbscan = new AlgorithmDBSCAN(kq);
-      
-            dbscan.DBSCAN(SetOfPoints, Eps, 4);
+        double Eps = 0.35;
+        double temp =Eps;
+        int MinPoints = 3;
+        int org=MinPoints;
+        dbscan.DBSCAN(SetOfPoints, Eps, MinPoints, 0);
+        //Cluster noise
+        //get noise points
+        
+        while (true) {
+            //calculate last cluster id
             int max = -1;
             for (int i = 0; i < SetOfPoints.size(); i++) {
                 DBPoint p = SetOfPoints.get(i);
@@ -97,47 +124,88 @@ public class run {
                     max = p.getClusterID();
                 }
             }
-            start = Calendar.getInstance().getTimeInMillis();
-            System.out.println("Time to run DBSCAN " + (start - end));
-            System.out.printf("Eps = %4f => Number of Cluster %d\n", Eps, max);
+            ////
+            if (Eps<=0.64) {
+                Eps += 0.05;
+            }
+             else 
+            {
+                MinPoints--;
+                Eps = temp;
+            }
+            System.out.println(Eps);
+            boolean isHasNoise = false;
+            ArrayList<DBPoint> SetOfNoise = new ArrayList<>();
+            for (int i = 0; i < SetOfPoints.size(); i++) {
+                if (SetOfPoints.get(i).getClusterID() == param.NOISE) {
+                    SetOfNoise.add(SetOfPoints.get(i));
+                    isHasNoise = true;
+                }
+            }
+           
+            if (SetOfNoise.size()<=MinPoints)
+                MinPoints--;
+            if (!isHasNoise) break;
+            for (int i = 0; i < SetOfNoise.size(); i++) {
+                SetOfNoise.get(i).setClusterID(param.UNCLASSIFIED);
+            }
+            //run Scan again
+            dbscan.DBSCAN(SetOfNoise, Eps, MinPoints, max + 1);
+            //
+            //update setPoints
+            for (int i = 0; i < SetOfNoise.size(); i++) {
+                for (int j = 0; j < SetOfPoints.size(); j++) {
+                    if (SetOfNoise.get(i).getId() == SetOfPoints.get(j).getId()) {
+                        SetOfPoints.get(j).setClusterID(SetOfNoise.get(i).getClusterID());
+                        break;
+                    }
+                }
+            }
+        }
+        ///end ......................................
+        String fout = "D:/Result" + Calendar.getInstance().getTime().getTime() + "_DBSCAN_Loop_" + l.size() + "_" + org + "_"+ temp + ".txt";
+        int max = -1;
+        for (int i = 0; i < SetOfPoints.size(); i++) {
+            DBPoint p = SetOfPoints.get(i);
+            if (p.getClusterID() > max) {
+                max = p.getClusterID();
+            }
+        }
+
+
+        start = Calendar.getInstance().getTimeInMillis();
+        System.out.println("Time to run DBSCAN " + (start - end));
         
-      //  System.out.printf("Clustered %d Cluster\n", result.size());
+        FileOutputStream fos = new FileOutputStream(fout);
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fos));
+        //(new ReadWriteExcelFile()).writeResultToExcelFile(SetOfPoints, l, max, fout);   
         for (int i = -2; i <= max; i++) {
             System.out.println("---------------Cluster " + (i));
             int count = 0;
+            ArrayList<Link> arr = new ArrayList<>();
             for (int j = 0; j < SetOfPoints.size(); j++) {
+
                 if (SetOfPoints.get(j).getClusterID() == i) {
                     count++;
-                    System.out.print(l.get(SetOfPoints.get(j).getId()).getUrl() + " ");;
-                    List<Object[]> ll = dao.getDistinctTags(l.get(SetOfPoints.get(j).getId()));
-                    for (int k = 0; k < ll.size(); k++) {
-                        System.out.print(ll.get(k)[0].toString() + "(" + ll.get(k)[1].toString() + ") ");
-                    }
-
-                    System.out.println();
+                    arr.add(l.get(SetOfPoints.get(j).getId()));
+                    //System.out.printf("%s ", l.get(SetOfPoints.get(j).getId()).getUrl());
+//                    List<Object[]> ll = dao.getDistinctTags(l.get(SetOfPoints.get(j).getId()));
+//                    for (int k = 0; k < ll.size(); k++) {
+//                        System.out.printf("%s(%.0f) ", ll.get(k)[0].toString(), Double.parseDouble(ll.get(k)[1].toString()));
+//                    }
+//                    System.out.println();
                 }
             }
             System.out.printf("Numbers of Cluster %d is %d\n", i, count);
+
+            if (count > 0) {
+                bw.write(String.format("[Cluster] %d\n",count));
+                (new DataCollect()).getMatrixDataAndWriteFile(arr, bw);
+            }
         }
+        System.out.println();
         end = Calendar.getInstance().getTimeInMillis();
         System.out.println("Time to write result " + (end - start));
-
-
-//        ArrayList<DBPoint> a = new ArrayList<>();
-//        DBPoint p = new DBPoint();
-//        p.setId(0);
-//        p.setClusterID(0);
-//        a.add(p);
-//        p = new DBPoint();
-//        p.setId(2);
-//        p.setClusterID(0);
-//        a.add(p);
-//        DBPoint pp = new DBPoint();
-//        pp.setClusterID(0);
-//        pp.setId(2);
-//        System.out.println(a.get(a.indexOf(pp)).getId());
-
-
 
     }
 }

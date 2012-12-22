@@ -28,6 +28,10 @@ public class DBSCANParameter {
             arr[i] = getDistanceToPointsNearest(i, k);
         }
         QuickSortDesc(arr, 0, arr.length-1);
+        for (int i=0;i<arr.length;i++){
+            System.out.printf("%f ",arr[i]);
+        }
+        System.out.println();
         return arr;
     }
     public double getDistanceToPointsNearest(int pointsID, int kNearest) {

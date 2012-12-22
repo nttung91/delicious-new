@@ -19,17 +19,34 @@ public class run2 {
     public static void main(String[] args) {
         HelpLibDBSCAN dbdao = new HelpLibDBSCAN();
         HelperLib dao = new HelperLib();
-        List<Link> l = dao.getListLinks(2);
+        List<Link> l = dao.getListLinks(100);
         ArrayList<List<Object[]>> arr = dao.getListLinkData(l);
-        double dist = dao.getDistanceBetweenLinks(arr, 0, 1);
+        double min = Double.MIN_VALUE;
+        int posi=0,posj=0;
+        for (int i=0;i<l.size();i++){
+            for (int j=0;j<i;j++){
+                double val = dao.getDistanceBetweenLinks(arr, i, j);
+                if (val>min){
+                    min = val;
+                    posi = i;
+                    posj = j;
+                }
+                    
+            }
+        }
+        
+        double dist = dao.getDistanceBetweenLinks(arr, posi, posj);
         System.out.println(dist);
-        for (int i = 0; i < l.size(); i++) {
-            List<Object[]> ll = dao.getDistinctTags(l.get(i));
+        
+            List<Object[]> ll = dao.getDistinctTags(l.get(posi));
+            List<Object[]> ll1 = dao.getDistinctTags(l.get(posj));
             for (int k = 0; k < ll.size(); k++) {
                 System.out.print(ll.get(k)[0].toString() + "(" + ll.get(k)[1].toString() + ") ");
             }
             System.out.println();
-        }
+            for (int k = 0; k < ll1.size(); k++) {
+                System.out.print(ll1.get(k)[0].toString() + "(" + ll1.get(k)[1].toString() + ") ");
+            }
 
     }
 }
