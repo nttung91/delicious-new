@@ -2,11 +2,12 @@
 <!DOCTYPE hibernate-reverse-engineering PUBLIC "-//Hibernate/Hibernate Reverse Engineering DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-reverse-engineering-3.0.dtd">
 <hibernate-reverse-engineering>
   <schema-selection match-catalog="Delicious" match-schema="public"/>
-  <table-filter match-name="author"/>
-  <table-filter match-name="link"/>
   <table-filter match-name="tag_collect"/>
+  <table-filter match-name="cluster_space"/>
+  <table-filter match-name="save_link"/>
   <table-filter match-name="tag"/>
   <table-filter match-name="following"/>
+  <table-filter match-name="link"/>
+  <table-filter match-name="author"/>
   <table-filter match-name="tag_link"/>
-  <table-filter match-name="save_link"/>
 </hibernate-reverse-engineering>

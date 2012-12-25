@@ -1,8 +1,7 @@
 package model.pojo;
-// Generated Oct 21, 2012 11:19:59 PM by Hibernate Tools 3.2.1.GA
+// Generated Dec 22, 2012 8:13:12 PM by Hibernate Tools 3.2.1.GA
 
 
-import java.sql.Timestamp;
 import java.util.Date;
 
 /**
@@ -14,7 +13,7 @@ public class Following  implements java.io.Serializable {
      private FollowingId id;
      private Author authorByFollowee;
      private Author authorByFollower;
-     private Timestamp dateFollow;
+     private Date dateFollow;
 
     public Following() {
     }
@@ -25,7 +24,7 @@ public class Following  implements java.io.Serializable {
         this.authorByFollowee = authorByFollowee;
         this.authorByFollower = authorByFollower;
     }
-    public Following(FollowingId id, Author authorByFollowee, Author authorByFollower, Timestamp dateFollow) {
+    public Following(FollowingId id, Author authorByFollowee, Author authorByFollower, Date dateFollow) {
        this.id = id;
        this.authorByFollowee = authorByFollowee;
        this.authorByFollower = authorByFollower;
@@ -53,11 +52,11 @@ public class Following  implements java.io.Serializable {
     public void setAuthorByFollower(Author authorByFollower) {
         this.authorByFollower = authorByFollower;
     }
-    public Timestamp getDateFollow() {
+    public Date getDateFollow() {
         return this.dateFollow;
     }
     
-    public void setDateFollow(Timestamp dateFollow) {
+    public void setDateFollow(Date dateFollow) {
         this.dateFollow = dateFollow;
     }
 

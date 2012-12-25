@@ -75,6 +75,23 @@ public class LinkDAO extends ObjectDAO<Link, Integer> {
         session.close();
         return list;
     }
+      public int getLinkIDByUrl(String url){
+           Session session = HibernateUtil.getSessionFactory().openSession();
+        List<Link> list= null;
+        String hql = String.format("select obj.linkId from Link obj where obj.url = :val");
+        Query query = session.createQuery(hql);
+        query.setParameter("val", url);
+      
+        Object obj  = query.uniqueResult();
+          session.close();
+        if (obj!=null){
+            return (int)obj;
+        }
+        else 
+        return -1;
+        
+        
+      }
     @Override
     protected Class getPOJOClass() {
         return Link.class;

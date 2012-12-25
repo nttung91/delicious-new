@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
 "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
-<!-- Generated Oct 21, 2012 11:19:59 PM by Hibernate Tools 3.2.1.GA -->
+<!-- Generated Dec 22, 2012 8:13:13 PM by Hibernate Tools 3.2.1.GA -->
 <hibernate-mapping>
     <class name="model.pojo.Author" table="author" schema="public">
         <id name="authorId" type="int">
@@ -9,13 +9,13 @@
             <generator class="assigned" />
         </id>
         <property name="authorName" type="string">
-            <column name="author_name" length="100" />
+            <column name="author_name" length="100" unique="true" />
         </property>
-        <property name="isFollowed" type="int">
-            <column name="is_followed"/>
+        <property name="isFollowed" type="java.lang.Integer">
+            <column name="is_followed" />
         </property>
-        <property name="isGetFollowee" type="int">
-            <column name="is_get_followee"/>
+        <property name="isGetFollowee" type="java.lang.Integer">
+            <column name="is_get_followee" />
         </property>
         <set name="saveLinks" inverse="true">
             <key>
