@@ -1,5 +1,5 @@
 package model.pojo;
-// Generated Oct 21, 2012 11:19:59 PM by Hibernate Tools 3.2.1.GA
+// Generated Dec 22, 2012 8:13:12 PM by Hibernate Tools 3.2.1.GA
 
 
 import java.util.HashSet;
@@ -13,25 +13,8 @@ public class Author  implements java.io.Serializable {
 
      private int authorId;
      private String authorName;
-     private int isFollowed;
-     private int isGetFollowee;
-
-    public int getIsGetFollowee() {
-        return isGetFollowee;
-    }
-
-    public void setIsGetFollowee(int isGetFollowee) {
-        this.isGetFollowee = isGetFollowee;
-    }
-     
-
-    public int getIsFollowed() {
-        return isFollowed;
-    }
-
-    public void setIsFollowed(int isFollowed) {
-        this.isFollowed = isFollowed;
-    }
+     private Integer isFollowed;
+     private Integer isGetFollowee;
      private Set saveLinks = new HashSet(0);
      private Set followingsForFollowee = new HashSet(0);
      private Set followingsForFollower = new HashSet(0);
@@ -43,9 +26,11 @@ public class Author  implements java.io.Serializable {
     public Author(int authorId) {
         this.authorId = authorId;
     }
-    public Author(int authorId, String authorName, Set saveLinks, Set followingsForFollowee, Set followingsForFollower) {
+    public Author(int authorId, String authorName, Integer isFollowed, Integer isGetFollowee, Set saveLinks, Set followingsForFollowee, Set followingsForFollower) {
        this.authorId = authorId;
        this.authorName = authorName;
+       this.isFollowed = isFollowed;
+       this.isGetFollowee = isGetFollowee;
        this.saveLinks = saveLinks;
        this.followingsForFollowee = followingsForFollowee;
        this.followingsForFollower = followingsForFollower;
@@ -64,6 +49,20 @@ public class Author  implements java.io.Serializable {
     
     public void setAuthorName(String authorName) {
         this.authorName = authorName;
+    }
+    public Integer getIsFollowed() {
+        return this.isFollowed;
+    }
+    
+    public void setIsFollowed(Integer isFollowed) {
+        this.isFollowed = isFollowed;
+    }
+    public Integer getIsGetFollowee() {
+        return this.isGetFollowee;
+    }
+    
+    public void setIsGetFollowee(Integer isGetFollowee) {
+        this.isGetFollowee = isGetFollowee;
     }
     public Set getSaveLinks() {
         return this.saveLinks;

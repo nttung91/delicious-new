@@ -21,11 +21,20 @@ import org.hibernate.Session;
  */
 public class HelperLib {
 
-    public List<Object[]> getPopularTagsByLink(Link l) {
+    public List<Object[]> getPopularTagsByLinkId(int id) {
         Session session = HibernateUtil.getSessionFactory().openSession();
         String hql = "select t.tag.tagName,count(t.tag.tagName) from TagLink t where t.saveLink.link.linkId = :linkid group by t.tag.tagName order by count(t.tag.tagName) desc";
         Query query = session.createQuery(hql);
-        query.setParameter("linkid", l.getLinkId());
+        query.setParameter("linkid",id);
+        List<Object[]> list = query.list();
+        session.close();
+        return list;
+    }
+    public List<Object[]> getUserTags(String username){
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        String hql = "select t.tag.tagName,count(t.tag.tagName) from TagLink t where t.saveLink.author.authorName = :user and t.saveLink.author.isFollowed=1  group by t.tag.tagName order by count(t.tag.tagName) desc";
+        Query query = session.createQuery(hql);
+        query.setParameter("user",username);
         List<Object[]> list = query.list();
         session.close();
         return list;

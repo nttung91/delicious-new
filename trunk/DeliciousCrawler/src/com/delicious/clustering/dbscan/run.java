@@ -11,6 +11,9 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import model.dao.ClusterSpaceDAO;
+import model.pojo.ClusterSpace;
+import model.pojo.ClusterSpaceId;
 import model.pojo.Link;
 
 /**
@@ -93,21 +96,21 @@ public class run {
         List<Link> l = dao.getListLinks(1000);
         long end = Calendar.getInstance().getTimeInMillis();
         System.out.println("Time to get link " + (end - start));
-        //double[][] kq = readFromFile("D:/Data/700.txt", l.size());
-        double[][] kq = calculateFromData(l);
+        double[][] kq = readFromFile("D:/Data/1000.txt", l.size());
+        //double[][] kq = calculateFromData(l);
         start = Calendar.getInstance().getTimeInMillis();
         System.out.println("Time to calculate distance " + (start - end));
-        writeToFile(kq);
+        //writeToFile(kq);
         HelpLibDBSCAN param = new HelpLibDBSCAN();
-       // ArrayList<DBPoint> SetOfPoints = dbdao.convertData(l);
+        ArrayList<DBPoint> SetOfPoints = dbdao.convertData(l);
 
         //distribute(SetOfPoints, kq);
-        return;
+       // return;
 
         end = Calendar.getInstance().getTimeInMillis();
         System.out.println("Time to Convert data link " + (end - start));
         AlgorithmDBSCAN dbscan = new AlgorithmDBSCAN(kq);
-        double Eps = 0.35;
+        double Eps = 0.4;
         double temp =Eps;
         int MinPoints = 3;
         int org=MinPoints;
@@ -143,9 +146,12 @@ public class run {
                 }
             }
            
-            if (SetOfNoise.size()<=MinPoints)
+            if (SetOfNoise.size()<=MinPoints) {
                 MinPoints--;
-            if (!isHasNoise) break;
+            }
+            if (!isHasNoise) {
+                break;
+            }
             for (int i = 0; i < SetOfNoise.size(); i++) {
                 SetOfNoise.get(i).setClusterID(param.UNCLASSIFIED);
             }
@@ -178,15 +184,18 @@ public class run {
         
         FileOutputStream fos = new FileOutputStream(fout);
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fos));
-        //(new ReadWriteExcelFile()).writeResultToExcelFile(SetOfPoints, l, max, fout);   
+        //(new ReadWriteExcelFile()).writeResultToExcelFile(SetOfPoints, l, max, fout); 
+        (new ClusterSpaceDAO()).ClearAll();
         for (int i = -2; i <= max; i++) {
             System.out.println("---------------Cluster " + (i));
             int count = 0;
             ArrayList<Link> arr = new ArrayList<>();
             for (int j = 0; j < SetOfPoints.size(); j++) {
-
+                
                 if (SetOfPoints.get(j).getClusterID() == i) {
                     count++;
+                    ClusterSpace cl = new ClusterSpace(new ClusterSpaceId(l.get(SetOfPoints.get(j).getId()).getLinkId(), i));
+                    (new ClusterSpaceDAO()).saveOrUpdateObject(cl);
                     arr.add(l.get(SetOfPoints.get(j).getId()));
                     //System.out.printf("%s ", l.get(SetOfPoints.get(j).getId()).getUrl());
 //                    List<Object[]> ll = dao.getDistinctTags(l.get(SetOfPoints.get(j).getId()));

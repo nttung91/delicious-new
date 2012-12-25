@@ -1,8 +1,8 @@
 package model.pojo;
-// Generated Oct 21, 2012 11:19:59 PM by Hibernate Tools 3.2.1.GA
+// Generated Dec 22, 2012 8:13:12 PM by Hibernate Tools 3.2.1.GA
 
 
-import java.sql.Timestamp;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -15,7 +15,7 @@ public class SaveLink  implements java.io.Serializable {
      private int saveLinkId;
      private Author author;
      private Link link;
-     private Timestamp dateSave;
+     private Date dateSave;
      private String title;
      private String description;
      private Set tagLinks = new HashSet(0);
@@ -27,7 +27,7 @@ public class SaveLink  implements java.io.Serializable {
     public SaveLink(int saveLinkId) {
         this.saveLinkId = saveLinkId;
     }
-    public SaveLink(int saveLinkId, Author author, Link link, Timestamp dateSave, String title, String description, Set tagLinks) {
+    public SaveLink(int saveLinkId, Author author, Link link, Date dateSave, String title, String description, Set tagLinks) {
        this.saveLinkId = saveLinkId;
        this.author = author;
        this.link = link;
@@ -58,11 +58,11 @@ public class SaveLink  implements java.io.Serializable {
     public void setLink(Link link) {
         this.link = link;
     }
-    public Timestamp getDateSave() {
+    public Date getDateSave() {
         return this.dateSave;
     }
     
-    public void setDateSave(Timestamp dateSave) {
+    public void setDateSave(Date dateSave) {
         this.dateSave = dateSave;
     }
     public String getTitle() {

@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated Dec 22, 2012 8:13:13 PM by Hibernate Tools 3.2.1.GA -->
+<hibernate-mapping>
+    <class name="model.pojo.ClusterSpace" table="cluster_space" schema="public">
+        <composite-id name="id" class="model.pojo.ClusterSpaceId">
+            <key-property name="link" type="int">
+                <column name="link" />
+            </key-property>
+            <key-property name="clusterId" type="int">
+                <column name="cluster_id" />
+            </key-property>
+        </composite-id>
+    </class>
+</hibernate-mapping>

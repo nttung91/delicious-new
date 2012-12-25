@@ -1,17 +1,17 @@
 <?xml version="1.0"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
 "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
-<!-- Generated Oct 21, 2012 11:19:59 PM by Hibernate Tools 3.2.1.GA -->
+<!-- Generated Dec 22, 2012 8:13:13 PM by Hibernate Tools 3.2.1.GA -->
 <hibernate-mapping>
     <class name="model.pojo.SaveLink" table="save_link" schema="public">
         <id name="saveLinkId" type="int">
             <column name="save_link_id" />
             <generator class="assigned" />
         </id>
-        <many-to-one name="author" class="model.pojo.Author" fetch="select" cascade="save-update">
+        <many-to-one name="author" class="model.pojo.Author" fetch="select">
             <column name="author_id" />
         </many-to-one>
-        <many-to-one name="link" class="model.pojo.Link" fetch="select" cascade="save-update">
+        <many-to-one name="link" class="model.pojo.Link" fetch="select">
             <column name="link_id" />
         </many-to-one>
         <property name="dateSave" type="timestamp">
@@ -21,7 +21,7 @@
             <column name="title" length="1000" />
         </property>
         <property name="description" type="string">
-            <column name="description" length="1000" />
+            <column name="description" length="5000" />
         </property>
         <set name="tagLinks" inverse="true">
             <key>

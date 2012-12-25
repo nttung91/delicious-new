@@ -7,8 +7,8 @@
     <property name="hibernate.connection.url">jdbc:postgresql://localhost:5432/Delicious</property>
     <property name="hibernate.connection.username">postgres</property>
     <property name="hibernate.connection.password">thanhtung</property>
-    <property name="hibernate.show_sql">false</property>
     <mapping resource="model/pojo/TagLink.hbm.xml"/>
+    <mapping resource="model/pojo/ClusterSpace.hbm.xml"/>
     <mapping resource="model/pojo/Author.hbm.xml"/>
     <mapping resource="model/pojo/Tag.hbm.xml"/>
     <mapping resource="model/pojo/TagCollect.hbm.xml"/>

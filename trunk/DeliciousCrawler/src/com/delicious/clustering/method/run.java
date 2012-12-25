@@ -12,6 +12,9 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import model.dao.ClusterSpaceDAO;
+import model.pojo.ClusterSpace;
+import model.pojo.ClusterSpaceId;
 import model.pojo.Link;
 
 /**
@@ -37,6 +40,24 @@ public class run {
                 kq[line][j] = Double.parseDouble(str[j]);
             }
             line++;
+        }
+        return kq;
+    }
+    public static double[][] readFromFile1(String fin,int len) throws FileNotFoundException, IOException {
+        double[][] kq = new double[len][];
+
+
+        BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(fin)));
+        int line = 0;
+        while (br.ready()) {
+            String s = br.readLine();
+            String[] str = s.split(" ");
+            kq[line] = new double[str.length];
+            for (int j = 0; j < str.length; j++) {
+                kq[line][j] = Double.parseDouble(str[j]);
+            }
+            line++;
+            
         }
         return kq;
     }
@@ -91,17 +112,21 @@ public class run {
         HelpLibDBSCAN dbdao = new HelpLibDBSCAN();
         HelperLib dao = new HelperLib();
         long start = Calendar.getInstance().getTimeInMillis();
-        List<Link> l = dao.getListLinks(700);
+        List<Link> l = dao.getListLinks(400);
         long end = Calendar.getInstance().getTimeInMillis();
         System.out.println("Time to get link " + (end - start));
-        double[][] kq = readFromFile("D:/Data/700.txt", l.size());
+        double[][] kq = readFromFile("D:/Data/400.txt", l.size());
         //double[][] kq = calculateFromData(l);
 
         //writeToFile(kq);
 
         ArrayList<DBPoint> SetOfPoints = dbdao.convertData(l);
         //
+        
         double[][] arrVector = (new DataCollect()).getListVector(l);
+        System.out.println("Reading file");
+       // double[][] arrVector =  readFromFile1("D:/Data1356155981040_Vector_1000.txt",l.size());
+        System.out.println("Read file complete");
         double Eps = 0.65;
         MyMethod method = new MyMethod(kq, arrVector);
         method.Algorithm(SetOfPoints, Eps);
@@ -117,9 +142,9 @@ public class run {
       
 
 
-     
-         FileOutputStream fos = new FileOutputStream(fout);
-            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fos));
+      (new ClusterSpaceDAO()).ClearAll();
+         //FileOutputStream fos = new FileOutputStream(fout);
+           // BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fos));
         for (int i = -2; i <= max; i++) {
             System.out.println("---------------Cluster " + (i));
             int count = 0;
@@ -128,7 +153,9 @@ public class run {
 
                 if (SetOfPoints.get(j).getClusterID() == i) {
                     count++;
-                    arr.add(l.get(SetOfPoints.get(j).getId()));
+                     ClusterSpace cl = new ClusterSpace(new ClusterSpaceId(l.get(SetOfPoints.get(j).getId()).getLinkId(), i));
+                    (new ClusterSpaceDAO()).saveOrUpdateObject(cl);
+                   // arr.add(l.get(SetOfPoints.get(j).getId()));
 //                    System.out.printf("%s ", l.get(SetOfPoints.get(j).getId()).getUrl());
 //                    List<Object[]> ll = dao.getDistinctTags(l.get(SetOfPoints.get(j).getId()));
 //                    for (int k = 0; k < ll.size(); k++) {
@@ -139,8 +166,8 @@ public class run {
             }
             System.out.printf("Numbers of Cluster %d is %d\n", i, count);
             if (count > 0) {
-                bw.write(String.format("[Cluster] %d\n",count));
-                (new DataCollect()).getMatrixDataAndWriteFile(arr, bw);
+               // bw.write(String.format("[Cluster] %d\n",count));
+             //   (new DataCollect()).getMatrixDataAndWriteFile(arr, bw);
             }
         }
     }

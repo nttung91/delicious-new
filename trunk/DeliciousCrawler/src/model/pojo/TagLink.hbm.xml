@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
 "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
-<!-- Generated Oct 21, 2012 11:19:59 PM by Hibernate Tools 3.2.1.GA -->
+<!-- Generated Dec 22, 2012 8:13:13 PM by Hibernate Tools 3.2.1.GA -->
 <hibernate-mapping>
     <class name="model.pojo.TagLink" table="tag_link" schema="public">
         <composite-id name="id" class="model.pojo.TagLinkId">
@@ -12,10 +12,10 @@
                 <column name="tag_id" />
             </key-property>
         </composite-id>
-        <many-to-one name="tag" class="model.pojo.Tag" update="false" insert="false" fetch="select" cascade="save-update">
+        <many-to-one name="tag" class="model.pojo.Tag" update="false" insert="false" fetch="select">
             <column name="tag_id" not-null="true" />
         </many-to-one>
-        <many-to-one name="saveLink" class="model.pojo.SaveLink" update="false" insert="false" fetch="select" cascade="save-update">
+        <many-to-one name="saveLink" class="model.pojo.SaveLink" update="false" insert="false" fetch="select">
             <column name="save_link_id" not-null="true" />
         </many-to-one>
         <property name="info" type="string">

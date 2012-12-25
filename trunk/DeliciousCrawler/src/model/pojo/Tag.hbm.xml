@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
 "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
-<!-- Generated Oct 21, 2012 11:19:59 PM by Hibernate Tools 3.2.1.GA -->
+<!-- Generated Dec 22, 2012 8:13:13 PM by Hibernate Tools 3.2.1.GA -->
 <hibernate-mapping>
     <class name="model.pojo.Tag" table="tag" schema="public">
         <id name="tagId" type="int">
@@ -9,7 +9,7 @@
             <generator class="assigned" />
         </id>
         <property name="tagName" type="string">
-            <column name="tag_name" length="200" />
+            <column name="tag_name" length="200" unique="true" />
         </property>
         <set name="tagLinks" inverse="true">
             <key>
