@@ -89,6 +89,7 @@ public class DataCollect {
         double[][] kq = new double[list.size()][set.size()];
         int c = 0;
         for (int i = 0; i < list.size(); i++) {
+            System.out.println(i+"....");
             for (int j = 0; j < arr.size(); j++) {
                 //kiem tra contains
                 for (int k = 0; k < linkdata.get(i).size(); k++) {
@@ -139,6 +140,7 @@ public class DataCollect {
 
         return kq;
     }
+   
 
     public void getMatrixData(List<Link> l) throws FileNotFoundException, IOException {
         DataCollect dao = new DataCollect();
@@ -202,20 +204,20 @@ public class DataCollect {
         //writeToFile(kq, bw);
         ///print header
         for (int j = 0; j < Taglist.size(); j++) {
-            System.out.printf("%s><", Taglist.get(j));
+            //System.out.printf("%s><", Taglist.get(j));
             bw.write(String.format("%s><", Taglist.get(j)));
             bw.flush();
         }
         bw.flush();
          bw.write("\n");
         //System.out.printf("%s\n",kq[0].length);
-        System.out.println();
+       // System.out.println();
         for (int i = 0; i < kq.length; i++) {
             for (int j = 0; j < kq[0].length; j++) {
-                System.out.printf("%4.0f ", kq[i][j]);
+                //System.out.printf("%4.0f ", kq[i][j]);
                  bw.write(String.format("%.0f ", kq[i][j]));
             }
-            System.out.println();
+           // System.out.println();
              bw.write("\n");
              bw.flush();
             

@@ -36,6 +36,8 @@ public class FrmMain extends javax.swing.JFrame {
         lblUserTags = new javax.swing.JLabel();
         btnGetUserTags = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
+        lblRecomendTagsLevel2 = new javax.swing.JLabel();
+        lblPopularTags = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -46,6 +48,7 @@ public class FrmMain extends javax.swing.JFrame {
             }
         });
 
+        txtURL.setText("http://www.zurb.com/playground/responsive-tables");
         txtURL.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 txtURLActionPerformed(evt);
@@ -67,6 +70,8 @@ public class FrmMain extends javax.swing.JFrame {
             }
         });
 
+        txtUserName.setText("tvel10");
+
         lblUserTags.setForeground(new java.awt.Color(0, 0, 255));
         lblUserTags.setText("jLabel1");
 
@@ -79,10 +84,20 @@ public class FrmMain extends javax.swing.JFrame {
 
         jLabel1.setText("Username");
 
+        lblRecomendTagsLevel2.setText("jLabel2");
+
+        lblPopularTags.setText("jLabel3");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(btnSave)
+                .addGap(18, 18, 18)
+                .addComponent(btnSaveLike)
+                .addGap(28, 28, 28))
             .addGroup(layout.createSequentialGroup()
                 .addGap(21, 21, 21)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -95,19 +110,15 @@ public class FrmMain extends javax.swing.JFrame {
                         .addContainerGap())
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(lblPopularTags)
+                            .addComponent(lblRecomendTagsLevel2)
                             .addComponent(jLabel1)
                             .addComponent(lblUserTags)
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(txtUserName, javax.swing.GroupLayout.PREFERRED_SIZE, 176, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(29, 29, 29)
                                 .addComponent(btnGetUserTags)))
-                        .addGap(0, 260, Short.MAX_VALUE))))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(btnSave)
-                .addGap(18, 18, 18)
-                .addComponent(btnSaveLike)
-                .addGap(31, 31, 31))
+                        .addGap(0, 275, Short.MAX_VALUE))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -124,71 +135,116 @@ public class FrmMain extends javax.swing.JFrame {
                 .addComponent(txtURL, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(lblTagRecommend)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(lblRecomendTagsLevel2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(lblPopularTags)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 50, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnSave)
                     .addComponent(btnSaveLike))
-                .addContainerGap(68, Short.MAX_VALUE))
+                .addGap(23, 23, 23))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-    
     String username;
     private void txtURLActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtURLActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtURLActionPerformed
 
     private void btnSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
-       RecommendHelps rh = new RecommendHelps();
-       ArrayList<String> arr =  rh.getRecommendTags(txtURL.getText());
-       if (arr!=null){
-           String str="";
-           for (String s:arr)
-           {
-               str+=s+",";
-           }
-           if (str.equals("")) {
-               lblTagRecommend.setText("No tag found!!");
-           }
-           else {
-               lblTagRecommend.setText(str);
-           }
-       }else {
-           lblTagRecommend.setText("Link not found!!");
-                   
-       }
-       
+        RecommendHelps rh = new RecommendHelps();
+        ArrayList<String> arr = rh.getRecommendTags(txtURL.getText());
+        if (arr != null) {
+            String str = "";
+            int i = 12;
+            for (String s : arr) {
+                str += s + ",";
+                i--;
+                if (i == 0) {
+                    break;
+                }
+            }
+            if (str.equals("")) {
+                lblPopularTags.setText("No tag found!!");
+            } else {
+                lblPopularTags.setText(str);
+            }
+        } else {
+            lblPopularTags.setText("Link not found!!");
+
+        }
+
     }//GEN-LAST:event_btnSaveActionPerformed
 
     private void txtURLKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtURLKeyPressed
-       
     }//GEN-LAST:event_txtURLKeyPressed
 
     private void btnSaveLikeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveLikeActionPerformed
-        
+        RecommendHelps rh = new RecommendHelps();
+        ArrayList<ArrayList<String>> arr = rh.getRecommendTagsByUser(txtUserName.getText(), txtURL.getText());
+        if (arr != null) {
+            String str = "";
+            String str1 = "";
+            if (arr.get(0) != null) {
+                for (String s : arr.get(0)) {
+                    str += s + ",";
+                }
+            }
+            if (arr.get(1) != null) {
+                for (String s : arr.get(1)) {
+                    str1 += s + ",";
+                }
+            }
+            String str2="";
+            if (arr.get(2) != null) {
+                for (String s : arr.get(2)) {
+                    str2 += s + ",";
+                }
+            }
+            if (str.equals("")) {
+                lblTagRecommend.setText("No tag found!!");
+            } else {
+                lblTagRecommend.setText(str);
+            }
+            if (str2.equals("")) {
+                lblPopularTags.setText("No tag found!!");
+            } else {
+                lblPopularTags.setText(str2);
+            }
+            if (str1.equals("")) {
+                lblRecomendTagsLevel2.setText("No tag found!!");
+            } else {
+                lblRecomendTagsLevel2.setText(str1);
+            }
+        } else {
+            lblTagRecommend.setText("Link not found!!");
+        }
     }//GEN-LAST:event_btnSaveLikeActionPerformed
 
     private void btnGetUserTagsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGetUserTagsActionPerformed
-         RecommendHelps rh = new RecommendHelps();
-         ArrayList<String> arr =  rh.getUserTags(txtUserName.getText());
-       if (arr!=null){
-           String str="";
-           for (String s:arr)
-           {
-               str+=s+",";
-           }
-           if (str.equals("")) {
-               lblUserTags.setText("No tag found!!");
-           }
-           else {
-               lblUserTags.setText(str);
-               this.username = txtUserName.getText();
-           }
-       }else {
-           lblUserTags.setText("User not found!!");
-                   
-       }
+        RecommendHelps rh = new RecommendHelps();
+        ArrayList<String> arr = rh.getUserTags(txtUserName.getText());
+        if (arr != null) {
+            String str = "";
+
+            for (String s : arr) {
+                str += s + ",";
+                if (str.length() > 100) {
+                    break;
+                }
+            }
+            if (str.equals("")) {
+                lblUserTags.setText("No tag found!!");
+            } else {
+                lblUserTags.setText(str);
+                this.username = txtUserName.getText();
+            }
+        } else {
+            lblUserTags.setText("User not found!!");
+
+        }
     }//GEN-LAST:event_btnGetUserTagsActionPerformed
 
     /**
@@ -230,6 +286,8 @@ public class FrmMain extends javax.swing.JFrame {
     private javax.swing.JButton btnSave;
     private javax.swing.JButton btnSaveLike;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel lblPopularTags;
+    private javax.swing.JLabel lblRecomendTagsLevel2;
     private javax.swing.JLabel lblTagRecommend;
     private javax.swing.JLabel lblUserTags;
     private javax.swing.JTextField txtURL;

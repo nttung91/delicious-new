@@ -77,7 +77,7 @@ public class LinkDAO extends ObjectDAO<Link, Integer> {
     }
       public int getLinkIDByUrl(String url){
            Session session = HibernateUtil.getSessionFactory().openSession();
-        List<Link> list= null;
+        
         String hql = String.format("select obj.linkId from Link obj where obj.url = :val");
         Query query = session.createQuery(hql);
         query.setParameter("val", url);

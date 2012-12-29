@@ -35,7 +35,7 @@ public class MyMethod {
             if (SetOfPoints.get(i).getClusterID() == UNCLASSIFIED) {
                 //lay cac diem lan can cua diem thu i chua duowc xet va danh dau da xet cho cac diem lan can
                 //lay diem mac dinh lam tam cho cluster
-
+                
                 ArrayList<DBPoint> seeds = getRegionQuery(SetOfPoints, arrDistance, SetOfPoints.get(i), Eps);
                 //set clusterID
                 for (int j = 0; j < seeds.size(); j++) {
