@@ -13,7 +13,7 @@ public class ClusterSpace  implements java.io.Serializable {
 
     public ClusterSpace() {
     }
-
+    
     public ClusterSpace(ClusterSpaceId id) {
        this.id = id;
     }

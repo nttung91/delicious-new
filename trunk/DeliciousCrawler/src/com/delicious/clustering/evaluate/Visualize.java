@@ -84,8 +84,6 @@ public class Visualize {
             mul[i]=m;
             count[i]=s;
         }
-      
-        
         //order
         for (int i=0;i<kq[0].length;i++){
             for (int j=i+1;j<kq[0].length;j++){

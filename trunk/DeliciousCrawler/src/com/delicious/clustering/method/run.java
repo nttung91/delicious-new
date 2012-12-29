@@ -112,10 +112,10 @@ public class run {
         HelpLibDBSCAN dbdao = new HelpLibDBSCAN();
         HelperLib dao = new HelperLib();
         long start = Calendar.getInstance().getTimeInMillis();
-        List<Link> l = dao.getListLinks(400);
+        List<Link> l = dao.getListLinks(1000);
         long end = Calendar.getInstance().getTimeInMillis();
         System.out.println("Time to get link " + (end - start));
-        double[][] kq = readFromFile("D:/Data/400.txt", l.size());
+        double[][] kq = readFromFile("D:/Data/1000.txt", l.size());
         //double[][] kq = calculateFromData(l);
 
         //writeToFile(kq);
@@ -123,11 +123,11 @@ public class run {
         ArrayList<DBPoint> SetOfPoints = dbdao.convertData(l);
         //
         
-        double[][] arrVector = (new DataCollect()).getListVector(l);
+       // double[][] arrVector = (new DataCollect()).getListVector(l);
         System.out.println("Reading file");
-       // double[][] arrVector =  readFromFile1("D:/Data1356155981040_Vector_1000.txt",l.size());
+       double[][] arrVector =  readFromFile1("D:/Data1356155981040_Vector_1000.txt",l.size());
         System.out.println("Read file complete");
-        double Eps = 0.65;
+        double Eps = 0.6;
         MyMethod method = new MyMethod(kq, arrVector);
         method.Algorithm(SetOfPoints, Eps);
 
@@ -142,20 +142,21 @@ public class run {
       
 
 
-      (new ClusterSpaceDAO()).ClearAll();
-         //FileOutputStream fos = new FileOutputStream(fout);
-           // BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fos));
-        for (int i = -2; i <= max; i++) {
+      //(new ClusterSpaceDAO()).ClearAll();
+         FileOutputStream fos = new FileOutputStream(fout);
+          BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fos));
+        for (int i = 0; i <= max; i++) {
             System.out.println("---------------Cluster " + (i));
             int count = 0;
             ArrayList<Link> arr = new ArrayList<>();
             for (int j = 0; j < SetOfPoints.size(); j++) {
-
+                
                 if (SetOfPoints.get(j).getClusterID() == i) {
+                    System.out.printf("%d %d\n",i,j);
                     count++;
-                     ClusterSpace cl = new ClusterSpace(new ClusterSpaceId(l.get(SetOfPoints.get(j).getId()).getLinkId(), i));
-                    (new ClusterSpaceDAO()).saveOrUpdateObject(cl);
-                   // arr.add(l.get(SetOfPoints.get(j).getId()));
+                    // ClusterSpace cl = new ClusterSpace(new ClusterSpaceId(l.get(SetOfPoints.get(j).getId()).getLinkId(), i));
+                    //(new ClusterSpaceDAO()).saveOrUpdateObject(cl);
+                    arr.add(l.get(SetOfPoints.get(j).getId()));
 //                    System.out.printf("%s ", l.get(SetOfPoints.get(j).getId()).getUrl());
 //                    List<Object[]> ll = dao.getDistinctTags(l.get(SetOfPoints.get(j).getId()));
 //                    for (int k = 0; k < ll.size(); k++) {
@@ -166,8 +167,8 @@ public class run {
             }
             System.out.printf("Numbers of Cluster %d is %d\n", i, count);
             if (count > 0) {
-               // bw.write(String.format("[Cluster] %d\n",count));
-             //   (new DataCollect()).getMatrixDataAndWriteFile(arr, bw);
+                bw.write(String.format("[Cluster] %d\n",count));
+                (new DataCollect()).getMatrixDataAndWriteFile(arr, bw);
             }
         }
     }
